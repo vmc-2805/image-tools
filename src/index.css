@@ -3244,3 +3244,49 @@ input:checked + .ab-slider-round:before {
   user-select: none;
   cursor: crosshair;
 }
+
+/* SEO Breadcrumbs Styling */
+.seo-breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 24px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  font-family: var(--sans-font);
+  font-size: 13px;
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+}
+
+.seo-breadcrumb-item {
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.seo-breadcrumb-item:hover {
+  color: var(--primary);
+  transform: translateY(-0.5px);
+}
+
+.seo-breadcrumb-item.active {
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+}
+
+.seo-breadcrumb-separator {
+  color: var(--text-muted);
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+}
+

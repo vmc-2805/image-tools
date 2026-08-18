@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
-import { PDFDocument } from 'pdf-lib';
 import { 
   Search, 
   ArrowLeft, 
@@ -29,12 +26,22 @@ import {
   Contrast,
   X
 } from 'lucide-react';
+import { getSeoData, updateMetaTags } from './seoData';
 
-// Configure PDF.js Worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString();
+const LazyReactCrop = React.lazy(() => import('react-image-crop'));
+
+let pdfjsInstance = null;
+const loadPdfjs = async () => {
+  if (pdfjsInstance) return pdfjsInstance;
+  const pdfjs = await import('pdfjs-dist/build/pdf.mjs');
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url
+  ).toString();
+  pdfjsInstance = pdfjs;
+  return pdfjs;
+};
+
 
 // Tools database definition based on screenshot categories
 const TOOLS_CATALOG = [
@@ -132,6 +139,65 @@ const hexToRgb = (hex) => {
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const [activeTool, setActiveTool] = useState(null);
+
+  // Sync browser URL and handle browser back/forward buttons (routing)
+  useEffect(() => {
+    const handlePopState = () => {
+      const segments = window.location.pathname.split('/').filter(Boolean);
+      const toolId = segments.length > 0 ? segments[segments.length - 1] : null;
+      if (toolId) {
+        const tool = TOOLS_CATALOG.find(t => t.id === toolId);
+        if (tool) {
+          setActiveTool(tool);
+          return;
+        }
+      }
+      setActiveTool(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    // Parse current URL path on initial load
+    handlePopState();
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Update history path when activeTool changes
+  useEffect(() => {
+    const segments = window.location.pathname.split('/').filter(Boolean);
+    const currentPathId = segments.length > 0 ? segments[segments.length - 1] : null;
+    
+    if (activeTool) {
+      if (currentPathId !== activeTool.id) {
+        window.history.pushState(null, '', `/${activeTool.id}`);
+      }
+    } else {
+      if (currentPathId !== null) {
+        window.history.pushState(null, '', '/');
+      }
+    }
+  }, [activeTool]);
+
+  // Dynamic SEO meta tags and JSON-LD update + Lazy-loading Signature fonts
+  useEffect(() => {
+    const seo = getSeoData(activeTool);
+    updateMetaTags(seo);
+
+    if (activeTool?.engine === 'sig') {
+      const linkId = 'signature-fonts-link';
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement('link');
+        link.id = linkId;
+        link.rel = 'stylesheet';
+        link.href = "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pacifico&family=Caveat:wght@400;700&family=Satisfy&family=Cookie&family=Great+Vibes&family=Courgette&family=Sacramento&family=Yellowtail&family=Parisienne&family=Alex+Brush&family=Allura&family=Arizonia&family=Bad+Script&family=Cedarville+Cursive&family=Clicker+Script&family=Damion&family=Kaushan+Script&family=Italianno&family=Just+Another+Hand&display=swap";
+        document.head.appendChild(link);
+      }
+    }
+  }, [activeTool]);
+
+
 
   // Engine PX: Pixelate Image States
   const [pxImage, setPxImage] = useState(null);
@@ -350,7 +416,7 @@ export default function App() {
   const [enableManualCrop, setEnableManualCrop] = useState(false);
   const imgRef = useRef(null);
 
-  const onImageLoad = (e) => {
+  const onImageLoad = async (e) => {
     if (enableManualCrop) {
       const { width, height } = e.currentTarget;
       let aspect = undefined;
@@ -358,6 +424,7 @@ export default function App() {
          aspect = resizeWidth / resizeHeight;
       }
       
+      const { centerCrop, makeAspectCrop } = await import('react-image-crop');
       const initialCrop = centerCrop(
         makeAspectCrop({
           unit: '%',
@@ -368,6 +435,7 @@ export default function App() {
       setCrop(initialCrop);
     }
   };
+
   
   // Engine B: Compressor States
   const [compressTargetKB, setCompressTargetKB] = useState(50);
@@ -895,6 +963,7 @@ export default function App() {
       if (targetFormat === 'pdf') {
         // Convert Image to PDF
         const fileBytes = await selectedFile.arrayBuffer();
+        const { PDFDocument } = await import('pdf-lib');
         const pdfDoc = await PDFDocument.create();
         
         let pdfImg;
@@ -922,7 +991,8 @@ export default function App() {
       } else if (targetFormat === 'pdf-to-jpg') {
         // Convert PDF pages to JPG image files
         const fileBytes = await selectedFile.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: fileBytes }).promise;
+        const pdfjs = await loadPdfjs();
+        const pdf = await pdfjs.getDocument({ data: fileBytes }).promise;
         const pageCount = pdf.numPages;
         
         showToast(`Converting ${pageCount} PDF pages to JPG...`);
@@ -1667,9 +1737,10 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
       try {
         const results = [];
 
+        const pdfjs = await loadPdfjs();
         for (const pdfItem of pdf2JpgFiles) {
           const typedArray = new Uint8Array(pdfItem.buffer);
-          const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+          const loadingTask = pdfjs.getDocument({ data: typedArray });
           const pdf = await loadingTask.promise;
           const numPages = pdf.numPages;
 
@@ -1777,6 +1848,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
     setTimeout(async () => {
       try {
+        const { PDFDocument } = await import('pdf-lib');
         const pdfDoc = await PDFDocument.create();
 
         for (const item of pdfImgFiles) {
@@ -3900,6 +3972,29 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
           )}
         </div>
       </header>
+
+      {activeTool && (
+        <nav className="seo-breadcrumbs" aria-label="Breadcrumb">
+          <span className="seo-breadcrumb-item" onClick={() => setActiveTool(null)}>
+            Home
+          </span>
+          <span className="seo-breadcrumb-separator">&gt;</span>
+          <span className="seo-breadcrumb-item" onClick={() => {
+            const categorySlug = `category-${activeTool.category.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            setActiveTool(null);
+            setTimeout(() => {
+              const el = document.getElementById(categorySlug);
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+          }}>
+            {activeTool.category}
+          </span>
+          <span className="seo-breadcrumb-separator">&gt;</span>
+          <span className="seo-breadcrumb-item active">
+            {activeTool.name}
+          </span>
+        </nav>
+      )}
       
       {!activeTool ? (
         // 2. DASHBOARD VIEW
@@ -3925,7 +4020,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
           
           <main className="dashboard-content">
             {Object.keys(categoriesMap).map((catName) => (
-              <div key={catName} className="category-section">
+              <div key={catName} id={`category-${catName.replace(/[^a-zA-Z0-9]/g, '-')}`} className="category-section">
                 <h2 className="category-title">{catName}</h2>
                 <div className="tools-grid">
                   {categoriesMap[catName].map((tool) => (
@@ -7739,24 +7834,26 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
                           </div>
                         ) : (
                           activeTool.engine === 'resizer' && enableManualCrop ? (
-                            <ReactCrop
-                              crop={crop}
-                              onChange={(_, percentCrop) => setCrop(percentCrop)}
-                              onComplete={(c) => setCompletedCrop(c)}
-                              style={{ transform: `scale(${cropZoom})`, transformOrigin: 'center center', transition: 'transform 0.2s ease-in-out' }}
-                            >
-                              <img 
-                                ref={imgRef}
-                                src={previewUrl} 
-                                alt="Crop preview" 
-                                className="preview-image" 
-                                onLoad={onImageLoad}
-                                style={{ 
-                                  backgroundColor: resizerBgColor !== 'transparent' ? resizerBgColor : 'transparent',
-                                  filter: `brightness(${cropBrightness}%) contrast(${cropContrast}%) saturate(${cropSaturation}%)`
-                                }}
-                              />
-                            </ReactCrop>
+                            <React.Suspense fallback={<div style={{ padding: '20px', color: '#9ca3af' }}>Loading crop tools...</div>}>
+                              <LazyReactCrop
+                                crop={crop}
+                                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                                onComplete={(c) => setCompletedCrop(c)}
+                                style={{ transform: `scale(${cropZoom})`, transformOrigin: 'center center', transition: 'transform 0.2s ease-in-out' }}
+                              >
+                                <img 
+                                  ref={imgRef}
+                                  src={previewUrl} 
+                                  alt="Crop preview" 
+                                  className="preview-image" 
+                                  onLoad={onImageLoad}
+                                  style={{ 
+                                    backgroundColor: resizerBgColor !== 'transparent' ? resizerBgColor : 'transparent',
+                                    filter: `brightness(${cropBrightness}%) contrast(${cropContrast}%) saturate(${cropSaturation}%)`
+                                  }}
+                                />
+                              </LazyReactCrop>
+                            </React.Suspense>
                           ) : (
                             <img 
                               src={previewUrl} 
