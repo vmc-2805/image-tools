@@ -32,24 +32,26 @@ export default function Header({
               Toolkits <ChevronDown size={14} style={{ marginLeft: '4px' }} />
             </span>
             <div className="nav-dropdown-content">
-              <div className="nav-dropdown-group-title">Image Utilities</div>
-              {TOOLS_CATALOG.filter(t => t.category === "Most Used Tools" || t.category === "Basic Editing").map(t => (
-                <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
-                  {t.name}
-                </div>
-              ))}
-              <div className="nav-dropdown-group-title">Sizes & Formats</div>
-              {TOOLS_CATALOG.filter(t => t.category === "DPI & Quality" || t.category === "Passport & ID Photo Sizes" || t.category === "Format Conversions").map(t => (
-                <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
-                  {t.name}
-                </div>
-              ))}
-              <div className="nav-dropdown-group-title">PDF & Compression</div>
-              {TOOLS_CATALOG.filter(t => t.category === "Image to PDF" || t.category === "Exact Target Sizes").map(t => (
-                <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
-                  {t.name}
-                </div>
-              ))}
+              <div className="nav-dropdown-content-inner">
+                <div className="nav-dropdown-group-title">Image Utilities</div>
+                {TOOLS_CATALOG.filter(t => t.category === "Most Used Tools" || t.category === "Basic Editing").map(t => (
+                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
+                    {t.name}
+                  </div>
+                ))}
+                <div className="nav-dropdown-group-title">Sizes & Formats</div>
+                {TOOLS_CATALOG.filter(t => t.category === "DPI & Quality" || t.category === "Passport & ID Photo Sizes" || t.category === "Format Conversions").map(t => (
+                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
+                    {t.name}
+                  </div>
+                ))}
+                <div className="nav-dropdown-group-title">PDF & Compression</div>
+                {TOOLS_CATALOG.filter(t => t.category === "Image to PDF" || t.category === "Exact Target Sizes").map(t => (
+                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
+                    {t.name}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

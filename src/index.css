@@ -3337,7 +3337,12 @@ input:checked + .ab-slider-round:before {
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  transform: translateX(-50%);
+  padding-top: 10px; /* Physical gap that captures cursor hover */
+  z-index: 1010;
+}
+
+.nav-dropdown-content-inner {
   background-color: var(--bg-app);
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -3346,20 +3351,9 @@ input:checked + .ab-slider-round:before {
   max-height: 400px;
   overflow-y: auto;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  z-index: 1010;
   padding: 8px 0;
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-}
-
-.nav-dropdown-content::before {
-  content: '';
-  position: absolute;
-  top: -16px;
-  left: -100px;
-  right: -100px;
-  height: 20px;
-  background: transparent;
 }
 
 .nav-dropdown:hover .nav-dropdown-content,
