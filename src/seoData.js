@@ -75,6 +75,38 @@ export const SEO_OVERRIDES = {
       { name: "Image to PDF", path: "/#category-Image-to-PDF" },
       { name: "Image to PDF Converter", path: "/image-to-pdf" }
     ]
+  },
+  "about-us": {
+    title: "About Us - Local Browser Utilities - AeroTools",
+    description: "Learn about the client-side local architecture of AeroTools, our compliance safeguards, and how our utilities process data inside your browser sandbox.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "About Us", path: "/about-us" }
+    ]
+  },
+  "privacy-policy": {
+    title: "Privacy Policy - 100% Client-Side Protection - AeroTools",
+    description: "AeroTools privacy safeguards. All operations run entirely in your local browser sandbox. We do not collect, store, or transmit your files.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Privacy Policy", path: "/privacy-policy" }
+    ]
+  },
+  "terms-of-service": {
+    title: "Terms of Service - Local Usage Guidelines - AeroTools",
+    description: "Read the usage license, commercial disclaimer, and terms of service for using the AeroTools browser-local utilities portal.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Terms of Service", path: "/terms-of-service" }
+    ]
+  },
+  "contact-support": {
+    title: "Contact Support - Tech Queries - AeroTools",
+    description: "Get in touch with the AeroTools support team for document formatting, file compression, and technical query resolutions.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Contact Support", path: "/contact-support" }
+    ]
   }
 };
 
