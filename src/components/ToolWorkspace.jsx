@@ -26,7 +26,7 @@ import {
   X,
   ChevronDown
 } from 'lucide-react';
-import { getSeoData, updateMetaTags } from '../seoData';
+import { getSeoData, updateMetaTags, fetchAndApplySeo } from '../seoData';
 import { TOOLS_CATALOG } from '../toolsCatalog';
 
 const LazyReactCrop = React.lazy(() => import('react-image-crop'));
@@ -73,8 +73,7 @@ const FAQS = [
 export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
   // Dynamic SEO meta tags and JSON-LD update + Lazy-loading Signature fonts
   useEffect(() => {
-    const seo = getSeoData(activeTool);
-    updateMetaTags(seo);
+    fetchAndApplySeo(activeTool);
 
     if (activeTool?.engine === 'sig') {
       const linkId = 'signature-fonts-link';

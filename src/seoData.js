@@ -270,3 +270,108 @@ export function updateMetaTags(seo) {
     console.error("Failed to update SEO tags:", error);
   }
 }
+
+/**
+ * Parses and applies the SEO tags returned by the API to the DOM head.
+ */
+function applySeoFromApi(data) {
+  try {
+    // 1. Remove any previously injected dynamic tags to avoid pile up
+    const oldTags = document.querySelectorAll('[data-dynamic-seo]');
+    oldTags.forEach(tag => tag.remove());
+
+    // 2. Inject meta_tags_html
+    if (data.meta_tags_html && Array.isArray(data.meta_tags_html)) {
+      data.meta_tags_html.forEach(tagHtml => {
+        // Parse the HTML string to a DOM element
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(tagHtml, 'text/html');
+        // The element will be in the head or body of the parsed document
+        const element = doc.head.firstElementChild || doc.body.firstElementChild;
+        
+        if (element) {
+          element.setAttribute('data-dynamic-seo', 'true');
+          
+          const tagName = element.tagName.toLowerCase();
+          
+          if (tagName === 'title') {
+            document.title = element.textContent;
+          } else {
+            // To prevent duplicates with existing static tags in index.html,
+            // remove any existing tags with the same name, property or rel
+            const name = element.getAttribute('name');
+            const property = element.getAttribute('property');
+            const rel = element.getAttribute('rel');
+            
+            let selector = '';
+            if (name) selector = `meta[name="${name}"]`;
+            else if (property) selector = `meta[property="${property}"]`;
+            else if (rel) selector = `link[rel="${rel}"]`;
+            
+            if (selector) {
+              const existing = document.querySelector(selector);
+              if (existing && !existing.hasAttribute('data-dynamic-seo')) {
+                existing.remove();
+              }
+            }
+            
+            document.head.appendChild(element);
+          }
+        }
+      });
+    }
+
+    // 3. Inject schema_json_ld
+    if (data.schema_json_ld) {
+      const schemaScript = document.createElement('script');
+      schemaScript.id = 'seo-jsonld-schema';
+      schemaScript.type = 'application/ld+json';
+      schemaScript.setAttribute('data-dynamic-seo', 'true');
+      schemaScript.text = JSON.stringify(data.schema_json_ld);
+      document.head.appendChild(schemaScript);
+    }
+  } catch (error) {
+    console.error("Error applying SEO from API:", error);
+  }
+}
+
+let lastFetchedUrl = '';
+let lastFetchedData = null;
+
+/**
+ * Fetches SEO metadata from the API based on current path and domain,
+ * then updates head elements. Falls back to static configurations on error.
+ */
+export async function fetchAndApplySeo(activeTool) {
+  const apiBaseUrl = import.meta.env.VITE_SEO_API_BASE_URL || 'http://192.168.1.7:8004';
+  const domainName = window.location.origin;
+  const path = window.location.pathname;
+  const url = `${apiBaseUrl}/api/v1/public/seo?domain_name=${encodeURIComponent(domainName)}&path=${encodeURIComponent(path)}`;
+
+  // Deduplicate identical requests within a short timeframe
+  if (url === lastFetchedUrl && lastFetchedData) {
+    applySeoFromApi(lastFetchedData);
+    return;
+  }
+
+  try {
+    lastFetchedUrl = url;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`API returned status ${response.status}`);
+    }
+    const result = await response.json();
+    if (result.success && result.data) {
+      lastFetchedData = result.data;
+      applySeoFromApi(result.data);
+      return;
+    }
+    throw new Error(result.message || 'API response success is false');
+  } catch (error) {
+    console.warn("Failed to fetch dynamic SEO from API, using fallback local SEO config:", error);
+    // Fallback to local SEO config
+    const fallbackSeo = getSeoData(activeTool);
+    updateMetaTags(fallbackSeo);
+  }
+}
+

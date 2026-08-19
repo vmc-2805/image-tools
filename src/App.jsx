@@ -12,7 +12,7 @@ import {
   Sliders, 
   Palette 
 } from 'lucide-react';
-import { getSeoData, updateMetaTags } from './seoData';
+import { getSeoData, updateMetaTags, fetchAndApplySeo } from './seoData';
 import { TOOLS_CATALOG } from './toolsCatalog';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -109,8 +109,7 @@ export default function App() {
 
   // Dynamic SEO meta tags and JSON-LD update
   useEffect(() => {
-    const seo = getSeoData(activeTool);
-    updateMetaTags(seo);
+    fetchAndApplySeo(activeTool);
   }, [activeTool]);
 
   // Filter tools based on search query
