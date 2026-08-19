@@ -3814,20 +3814,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
      }
   };
 
-  // 6. Portal Filters (Dashboard Search)
-  const filteredTools = TOOLS_CATALOG.filter(tool => {
-    const q = searchQuery.toLowerCase();
-    return tool.name.toLowerCase().includes(q) || 
-           tool.desc.toLowerCase().includes(q) || 
-           tool.category.toLowerCase().includes(q);
-  });
 
-  // Group filtered tools by category
-  const categoriesMap = filteredTools.reduce((acc, tool) => {
-    acc[tool.category] = acc[tool.category] || [];
-    acc[tool.category].push(tool);
-    return acc;
-  }, {});
 
   return (
     <>
