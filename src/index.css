@@ -856,39 +856,22 @@ body {
 
 /* === SIGNATURE MAKER STYLES === */
 .sig-maker-wrapper {
-  flex: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 20px 60px 20px;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
-  padding: 32px;
-  overflow-y: auto;
-}
-
-.sig-maker-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.sig-maker-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 8px 0;
-}
-
-.sig-maker-subtitle {
-  font-size: 14px;
-  color: var(--text-secondary);
 }
 
 .sig-maker-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-backdrop);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   border: 1px solid var(--border-color);
-  max-width: 900px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0 auto 40px auto;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -897,12 +880,13 @@ body {
 .sig-tabs-row {
   display: flex;
   border-bottom: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .sig-tab-btn {
   flex: 1;
-  padding: 16px;
-  background: white;
+  padding: 16px 20px;
+  background: transparent;
   border: none;
   border-right: 1px solid var(--border-color);
   font-size: 14px;
@@ -913,85 +897,191 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-family: var(--sans-font);
 }
 
 .sig-tab-btn:last-child {
   border-right: none;
 }
 
+.sig-tab-btn:hover:not(.active) {
+  background: var(--bg-btn-hover);
+  color: var(--text-primary);
+}
+
 .sig-tab-btn.active {
-  background: #6a718c;
-  color: white;
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 10px var(--primary-glow);
 }
 
 .sig-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  gap: 16px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.015);
 }
 
 .sig-toolbar-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .sig-input-wrap {
   display: flex;
   align-items: center;
-  background: white;
+  background: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 0 12px;
-  height: 36px;
+  height: 38px;
+  transition: all 0.2s ease;
+}
+
+.sig-input-wrap:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.sig-input-icon {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin-right: 8px;
+  user-select: none;
 }
 
 .sig-input-wrap input {
   border: none;
   outline: none;
   background: transparent;
-  padding: 8px;
+  padding: 4px 0;
   font-size: 14px;
+  color: var(--text-primary);
+  font-family: var(--sans-font);
+  width: 140px;
+}
+
+.sig-size-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0 10px;
+  height: 38px;
+  transition: all 0.2s ease;
+}
+
+.sig-size-wrap:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.sig-size-wrap input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 36px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--sans-font);
+}
+
+.sig-paper-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sig-paper-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 .sig-paper-btn {
-  width: 40px;
+  width: 36px;
   height: 24px;
   border: 1px solid var(--border-color);
   cursor: pointer;
-  border-radius: 2px;
-  background: white;
+  border-radius: 4px;
+  background: #ffffff;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.sig-paper-btn:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-1px);
 }
 
 .sig-paper-btn.active {
   border: 2px solid var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
 }
 
-.sig-paper-tint { background: #e0f2fe; }
-.sig-paper-blank { background: white; }
-.sig-paper-lined { background: repeating-linear-gradient(white, white 29px, #a5f3fc 30px); }
-.sig-paper-gray { background: #e2e8f0; }
-.sig-paper-clear { background: transparent; display: flex; align-items: center; justify-content: center; border: none; color: #ef4444; }
+.sig-paper-blank { background: #ffffff; }
+.sig-paper-tint { background: #f4f4f6; }
+.sig-paper-lined { 
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(#ffffff, #ffffff 6px, #93c5fd 7px, #93c5fd 8px); 
+}
+.sig-paper-custom { 
+  background: #fef3c7; 
+  position: relative;
+  overflow: hidden;
+}
+.sig-paper-clear { 
+  background: transparent; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border-color: var(--border-color);
+  color: var(--danger); 
+}
 
 .sig-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  padding: 24px;
-  background: #f8fafc;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .sig-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sig-font-card {
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sig-font-card:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
 .sig-font-card-header {
@@ -1000,15 +1090,116 @@ body {
   justify-content: space-between;
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-color);
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.02);
+  user-select: none;
+}
+
+.sig-angle-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-btn);
+  transition: all 0.15s ease;
+}
+
+.sig-angle-control:hover {
+  background: var(--bg-btn-hover);
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+}
+
+.sig-variant-tabs {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-btn);
+}
+
+.sig-variant-btn {
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-right: 1px solid var(--border-color);
+  transition: all 0.15s ease;
+}
+
+.sig-variant-btn:last-child {
+  border-right: none;
+}
+
+.sig-variant-btn:hover {
+  background: var(--bg-btn-hover);
+  color: var(--text-primary);
+}
+
+.sig-variant-btn.active {
+  color: #ffffff;
+  font-weight: 700;
+  background: var(--primary);
 }
 
 .sig-font-card-body {
-  height: 120px;
+  height: 125px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+  padding: 12px;
+  user-select: none;
+}
+
+.sig-font-card-body.paper-blank {
+  background-color: #ffffff;
+}
+
+.sig-font-card-body.paper-tint {
+  background-color: #f4f4f6;
+}
+
+.sig-font-card-body.paper-lined {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(#ffffff, #ffffff 19px, #bae6fd 20px);
+}
+
+.sig-font-card-body.paper-clear {
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.sig-rendered-text {
+  text-align: center;
+  white-space: nowrap;
+  transition: transform 0.15s ease;
+  line-height: 1.2;
+  position: relative;
+  display: inline-block;
+}
+
+.sig-flourish-underline {
+  position: absolute;
+  bottom: -6px;
+  left: -5%;
+  width: 110%;
+  height: 4px;
+  border-bottom: 2px solid currentColor;
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .sig-font-card-footer {
@@ -1017,29 +1208,115 @@ body {
   justify-content: space-between;
   padding: 8px 12px;
   border-top: 1px solid var(--border-color);
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.02);
 }
 
+.sig-ink-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  box-shadow: inset 0 0 1px rgba(0,0,0,0.3);
+}
+
+.sig-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px var(--primary-glow);
+}
+
+.sig-download-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* Draw Signature Tab */
 .sig-draw-area {
   padding: 24px;
-  background: #f8fafc;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .sig-canvas-container {
   width: 100%;
+  max-width: 800px;
+  height: 320px;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
   position: relative;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
-.sig-draw-footer {
+.sig-draw-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+  display: block;
+}
+
+.sig-draw-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  border-top: 1px solid var(--border-color);
-  background: white;
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.sig-draw-colors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sig-draw-color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease;
+}
+
+.sig-draw-color-dot:hover {
+  transform: scale(1.15);
+}
+
+.sig-draw-color-dot.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.sig-draw-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Compressor Layout */

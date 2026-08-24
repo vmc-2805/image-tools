@@ -8,6 +8,7 @@ import {
   Trash, 
   Palette, 
   RotateCw, 
+  RotateCcw,
   Image, 
   FileText, 
   Sliders, 
@@ -24,12 +25,84 @@ import {
   Droplet,
   Contrast,
   X,
-  ChevronDown
+  ChevronDown,
+  Edit3,
+  Undo,
+  Redo
 } from 'lucide-react';
 import { getSeoData, updateMetaTags, fetchAndApplySeo } from '../seoData';
 import { TOOLS_CATALOG } from '../toolsCatalog';
 
 const LazyReactCrop = React.lazy(() => import('react-image-crop'));
+
+const SIGNATURE_FONTS = [
+  { name: 'Dancing Script', family: "'Dancing Script', cursive" },
+  { name: 'Pacifico', family: "'Pacifico', cursive" },
+  { name: 'Caveat', family: "'Caveat', cursive" },
+  { name: 'Satisfy', family: "'Satisfy', cursive" },
+  { name: 'Cookie', family: "'Cookie', cursive" },
+  { name: 'Great Vibes', family: "'Great Vibes', cursive" },
+  { name: 'Courgette', family: "'Courgette', cursive" },
+  { name: 'Sacramento', family: "'Sacramento', cursive" },
+  { name: 'Yellowtail', family: "'Yellowtail', cursive" },
+  { name: 'Parisienne', family: "'Parisienne', cursive" },
+  { name: 'Alex Brush', family: "'Alex Brush', cursive" },
+  { name: 'Allura', family: "'Allura', cursive" },
+  { name: 'Arizonia', family: "'Arizonia', cursive" },
+  { name: 'Bad Script', family: "'Bad Script', cursive" },
+  { name: 'Cedarville Cursive', family: "'Cedarville Cursive', cursive" },
+  { name: 'Clicker Script', family: "'Clicker Script', cursive" },
+  { name: 'Damion', family: "'Damion', cursive" },
+  { name: 'Kaushan Script', family: "'Kaushan Script', cursive" },
+  { name: 'Italianno', family: "'Italianno', cursive" },
+  { name: 'Just Another Hand', family: "'Just Another Hand', cursive" },
+  { name: 'Marck Script', family: "'Marck Script', cursive" },
+  { name: 'Herr Von Muellerhoff', family: "'Herr Von Muellerhoff', cursive" },
+  { name: 'Mrs Saint Delafield', family: "'Mrs Saint Delafield', cursive" },
+  { name: 'Pinyon Script', family: "'Pinyon Script', cursive" },
+  { name: 'Qwigley', family: "'Qwigley', cursive" },
+  { name: 'Rochester', family: "'Rochester', cursive" },
+  { name: 'Rouge Script', family: "'Rouge Script', cursive" },
+  { name: 'Tangerine', family: "'Tangerine', cursive" },
+  { name: 'WindSong', family: "'WindSong', cursive" },
+  { name: 'Montez', family: "'Montez', cursive" },
+  { name: 'La Belle Aurore', family: "'La Belle Aurore', cursive" },
+  { name: 'Homemade Apple', family: "'Homemade Apple', cursive" },
+  { name: 'Covered By Your Grace', family: "'Covered By Your Grace', cursive" },
+  { name: 'Reenie Beanie', family: "'Reenie Beanie', cursive" },
+  { name: 'Gloria Hallelujah', family: "'Gloria Hallelujah', cursive" },
+  { name: 'Indie Flower', family: "'Indie Flower', cursive" },
+  { name: 'Shadows Into Light', family: "'Shadows Into Light', cursive" },
+  { name: 'Kalam', family: "'Kalam', cursive" },
+  { name: 'Rock Salt', family: "'Rock Salt', cursive" },
+  { name: 'Permanent Marker', family: "'Permanent Marker', cursive" },
+  { name: 'Zeyada', family: "'Zeyada', cursive" },
+  { name: 'Nothing You Could Do', family: "'Nothing You Could Do', cursive" },
+  { name: 'Meddon', family: "'Meddon', cursive" },
+  { name: 'League Script', family: "'League Script', cursive" },
+  { name: 'Stalemate', family: "'Stalemate', cursive" },
+  { name: 'Lovers Quarrel', family: "'Lovers Quarrel', cursive" },
+  { name: 'Bilbo', family: "'Bilbo', cursive" },
+  { name: 'Bilbo Swash Caps', family: "'Bilbo Swash Caps', cursive" },
+  { name: 'Fondamento', family: "'Fondamento', cursive" },
+  { name: 'Calligraffitti', family: "'Calligraffitti', cursive" },
+  { name: 'Kristi', family: "'Kristi', cursive" },
+  { name: 'Euphoria Script', family: "'Euphoria Script', cursive" },
+  { name: 'Give You Glory', family: "'Give You Glory', cursive" },
+  { name: 'Delius Unicase', family: "'Delius Unicase', cursive" },
+  { name: 'Redressed', family: "'Redressed', cursive" },
+  { name: 'Berkshire Swash', family: "'Berkshire Swash', cursive" },
+  { name: 'Aguafina Script', family: "'Aguafina Script', cursive" },
+  { name: 'Ruthie', family: "'Ruthie', cursive" },
+  { name: 'Seaweed Script', family: "'Seaweed Script', cursive" },
+  { name: 'Monsieur La Doulaise', family: "'Monsieur La Doulaise', cursive" },
+  { name: 'Miss Fajardose', family: "'Miss Fajardose', cursive" },
+  { name: 'Engagement', family: "'Engagement', cursive" },
+  { name: 'Felipa', family: "'Felipa', cursive" },
+  { name: 'Meie Script', family: "'Meie Script', cursive" },
+  { name: 'Amatic SC', family: "'Amatic SC', cursive" },
+  { name: 'Gochi Hand', family: "'Gochi Hand', cursive" }
+];
 
 let pdfjsInstance = null;
 const loadPdfjs = async () => {
@@ -76,14 +149,21 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
     fetchAndApplySeo(activeTool);
 
     if (activeTool?.engine === 'sig') {
-      const linkId = 'signature-fonts-link';
-      if (!document.getElementById(linkId)) {
-        const link = document.createElement('link');
-        link.id = linkId;
-        link.rel = 'stylesheet';
-        link.href = "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pacifico&family=Caveat:wght@400;700&family=Satisfy&family=Cookie&family=Great+Vibes&family=Courgette&family=Sacramento&family=Yellowtail&family=Parisienne&family=Alex+Brush&family=Allura&family=Arizonia&family=Bad+Script&family=Cedarville+Cursive&family=Clicker+Script&family=Damion&family=Kaushan+Script&family=Italianno&family=Just+Another+Hand&display=swap";
-        document.head.appendChild(link);
-      }
+      const fontUrls = [
+        "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pacifico&family=Caveat:wght@400;700&family=Satisfy&family=Cookie&family=Great+Vibes&family=Courgette&family=Sacramento&family=Yellowtail&family=Parisienne&family=Alex+Brush&family=Allura&family=Arizonia&family=Bad+Script&family=Cedarville+Cursive&family=Clicker+Script&family=Damion&family=Kaushan+Script&family=Italianno&family=Just+Another+Hand&display=swap",
+        "https://fonts.googleapis.com/css2?family=Marck+Script&family=Herr+Von+Muellerhoff&family=Mrs+Saint+Delafield&family=Pinyon+Script&family=Qwigley&family=Rochester&family=Rouge+Script&family=Tangerine:wght@400;700&family=WindSong:wght@400;500&family=Montez&family=La+Belle+Aurore&family=Homemade+Apple&family=Covered+By+Your+Grace&family=Reenie+Beanie&family=Gloria+Hallelujah&family=Indie+Flower&family=Shadows+Into+Light&family=Kalam:wght@400;700&family=Rock+Salt&family=Permanent+Marker&display=swap",
+        "https://fonts.googleapis.com/css2?family=Zeyada&family=Nothing+You+Could+Do&family=Meddon&family=League+Script&family=Stalemate&family=Lovers+Quarrel&family=Bilbo&family=Bilbo+Swash+Caps&family=Fondamento&family=Calligraffitti&family=Kristi&family=Euphoria+Script&family=Give+You+Glory&family=Delius+Unicase:wght@400;700&family=Redressed&family=Berkshire+Swash&family=Aguafina+Script&family=Ruthie&family=Seaweed+Script&family=Monsieur+La+Doulaise&family=Miss+Fajardose&family=Engagement&family=Felipa&family=Meie+Script&family=Amatic+SC:wght@400;700&family=Gochi+Hand&display=swap"
+      ];
+      fontUrls.forEach((url, i) => {
+        const linkId = `signature-fonts-link-${i}`;
+        if (!document.getElementById(linkId)) {
+          const link = document.createElement('link');
+          link.id = linkId;
+          link.rel = 'stylesheet';
+          link.href = url;
+          document.head.appendChild(link);
+        }
+      });
     }
   }, [activeTool]);
 
@@ -321,17 +401,30 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
     }
   };
 
-  
   // Engine B: Compressor States
   const [compressTargetKB, setCompressTargetKB] = useState(50);
   const [compressMode, setCompressMode] = useState('reduce'); // reduce | increase
   
-  // Engine C: Signature Draw States
-  const [penColor, setPenColor] = useState('#000000');
-  const [penThickness, setPenThickness] = useState(3);
-  const [sigBackground, setSigBackground] = useState('transparent');
-  const sigCanvasRef = useRef(null);
-  const isDrawingRef = useRef(false);
+  // Engine C: Signature Maker States
+  const [sigTab, setSigTab] = useState('text'); // 'text' | 'draw'
+  const [sigText, setSigText] = useState('');
+  const [sigFontSize, setSigFontSize] = useState(28);
+  const [sigPaper, setSigPaper] = useState('tint'); // 'blank' | 'tint' | 'lined' | 'custom' | 'clear'
+  const [sigPaperCustomColor, setSigPaperCustomColor] = useState('#fef3c7');
+  const [sigGlobalInkColor, setSigGlobalInkColor] = useState('#1e3a8a');
+  const [sigCardSettings, setSigCardSettings] = useState({});
+
+  // Draw Signature Pad States
+  const [drawPenColor, setDrawPenColor] = useState('#000000');
+  const [drawPenThickness, setDrawPenThickness] = useState(3);
+  const [drawPaper, setDrawPaper] = useState('blank');
+  const [drawCustomPaperColor, setDrawCustomPaperColor] = useState('#fef3c7');
+  const [drawStrokes, setDrawStrokes] = useState([]);
+  const drawStrokesRef = useRef([]);
+  const [drawRedoStack, setDrawRedoStack] = useState([]);
+  const isDrawingSigRef = useRef(false);
+  const currentDrawPointsRef = useRef([]);
+  const drawCanvasRef = useRef(null);
   
   // Engine E: Filters / Effects States
   const [effectType, setEffectType] = useState('enhance');
@@ -769,71 +862,324 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
     }
   };
 
-  // 3. ENGINE C: Signature Canvas Implementation
-  const startDrawing = (e) => {
-    const canvas = sigCanvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
+  // 3. ENGINE C: Signature Maker Implementation
+  const getCardSetting = (fontName) => {
+    return {
+      angle: 0,
+      variant: 0,
+      inkColor: sigGlobalInkColor,
+      ...(sigCardSettings[fontName] || {})
+    };
+  };
+
+  const updateCardSetting = (fontName, patch) => {
+    setSigCardSettings(prev => ({
+      ...prev,
+      [fontName]: {
+        ...getCardSetting(fontName),
+        ...patch
+      }
+    }));
+  };
+
+  const cycleCardAngle = (fontName) => {
+    const current = getCardSetting(fontName).angle;
+    const angles = [0, 5, 10, 15, -15, -10, -5];
+    const nextIdx = (angles.indexOf(current) + 1) % angles.length;
+    updateCardSetting(fontName, { angle: angles[nextIdx] });
+  };
+
+  const downloadTextSignature = (fontName, fontFamily) => {
+    const setting = getCardSetting(fontName);
+    const angle = setting.angle || 0;
+    const variant = setting.variant || 0;
+    const inkColor = setting.inkColor || sigGlobalInkColor;
+    const textToDraw = sigText.trim() || 'Signature';
+
+    const canvas = document.createElement('canvas');
+    const scale = 3;
+    const width = 800;
+    const height = 360;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
     const ctx = canvas.getContext('2d');
-    
-    isDrawingRef.current = true;
-    
-    // Support touch and mouse coordinates
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    
-    ctx.strokeStyle = penColor;
-    ctx.lineWidth = penThickness;
+    ctx.scale(scale, scale);
+
+    // Background paper
+    if (sigPaper === 'blank') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+    } else if (sigPaper === 'tint') {
+      ctx.fillStyle = '#f4f4f6';
+      ctx.fillRect(0, 0, width, height);
+    } else if (sigPaper === 'lined') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = '#bae6fd';
+      ctx.lineWidth = 1.5;
+      for (let y = 30; y < height; y += 30) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+    } else if (sigPaper === 'custom') {
+      ctx.fillStyle = sigPaperCustomColor || '#fef3c7';
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    ctx.save();
+    ctx.translate(width / 2, height / 2);
+    ctx.rotate((angle * Math.PI) / 180);
+
+    let fontStyle = '';
+    let fontWeight = '400';
+    if (variant === 1) fontStyle = 'italic ';
+    if (variant === 2) fontWeight = '700 ';
+
+    const calcSize = sigFontSize * 2.2;
+    ctx.font = `${fontStyle}${fontWeight}${calcSize}px ${fontFamily}`;
+    ctx.fillStyle = inkColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(textToDraw, 0, 0);
+
+    if (variant === 3) {
+      const textMetrics = ctx.measureText(textToDraw);
+      const textWidth = textMetrics.width;
+      const underlineY = calcSize * 0.45;
+      ctx.strokeStyle = inkColor;
+      ctx.lineWidth = Math.max(2, calcSize * 0.05);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-textWidth / 2 - 10, underlineY);
+      ctx.quadraticCurveTo(0, underlineY + 12, textWidth / 2 + 15, underlineY - 4);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    const dataUrl = canvas.toDataURL('image/png');
+    const safeText = textToDraw.toLowerCase().replace(/[^a-z0-9]/gi, '_');
+    const safeFont = fontName.toLowerCase().replace(/[^a-z0-9]/gi, '_');
+    downloadDataUrl(dataUrl, `${safeText}_signature_${safeFont}.png`);
+    showToast(`Signature (${fontName}) downloaded!`);
+  };
+
+  const redrawDrawCanvas = (strokes = drawStrokesRef.current) => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    if (drawPaper === 'blank') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+    } else if (drawPaper === 'tint') {
+      ctx.fillStyle = '#f4f4f6';
+      ctx.fillRect(0, 0, w, h);
+    } else if (drawPaper === 'lined') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#bae6fd';
+      ctx.lineWidth = 1.5;
+      for (let y = 30; y < h; y += 30) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+    } else if (drawPaper === 'custom') {
+      ctx.fillStyle = drawCustomPaperColor || '#fef3c7';
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    if (strokes && strokes.length > 0) {
+      strokes.forEach(stroke => {
+        if (!stroke.points || stroke.points.length === 0) return;
+        ctx.strokeStyle = stroke.color;
+        ctx.fillStyle = stroke.color;
+        ctx.lineWidth = stroke.thickness;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (stroke.points.length === 1) {
+          ctx.beginPath();
+          ctx.arc(stroke.points[0].x, stroke.points[0].y, Math.max(1, stroke.thickness / 2), 0, Math.PI * 2);
+          ctx.fill();
+          return;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+        for (let i = 1; i < stroke.points.length; i++) {
+          ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+        }
+        ctx.stroke();
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (activeTool?.engine === 'sig' && sigTab === 'draw') {
+      const raf = requestAnimationFrame(() => {
+        redrawDrawCanvas(drawStrokesRef.current);
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [drawStrokes, drawPaper, drawCustomPaperColor, sigTab, activeTool]);
+
+  const getCanvasCoords = (e, canvas) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / (rect.width || canvas.width || 1);
+    const scaleY = canvas.height / (rect.height || canvas.height || 1);
+    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  };
+
+  const startDrawPad = (e) => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    try {
+      if (e.pointerId && canvas.setPointerCapture) {
+        canvas.setPointerCapture(e.pointerId);
+      }
+    } catch (err) {}
+
+    const { x, y } = getCanvasCoords(e, canvas);
+    isDrawingSigRef.current = true;
+    currentDrawPointsRef.current = [{ x, y }];
+
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = drawPenColor;
+    ctx.fillStyle = drawPenColor;
+    ctx.lineWidth = drawPenThickness;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
-    ctx.moveTo(clientX - rect.left, clientY - rect.top);
+    ctx.arc(x, y, Math.max(1, drawPenThickness / 2), 0, Math.PI * 2);
+    ctx.fill();
   };
 
-  const draw = (e) => {
-    if (!isDrawingRef.current) return;
-    const canvas = sigCanvasRef.current;
+  const moveDrawPad = (e) => {
+    if (!isDrawingSigRef.current) return;
+    const canvas = drawCanvasRef.current;
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
+
+    const { x, y } = getCanvasCoords(e, canvas);
+    currentDrawPointsRef.current.push({ x, y });
+
     const ctx = canvas.getContext('2d');
-    
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    
-    ctx.lineTo(clientX - rect.left, clientY - rect.top);
-    ctx.stroke();
-  };
-
-  const stopDrawing = () => {
-    isDrawingRef.current = false;
-  };
-
-  const clearSigCanvas = () => {
-    const canvas = sigCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  };
-
-  const downloadSignature = () => {
-    const canvas = sigCanvasRef.current;
-    if (!canvas) return;
-    
-    // To support transparent bg or colored background
-    const outputCanvas = document.createElement('canvas');
-    outputCanvas.width = canvas.width;
-    outputCanvas.height = canvas.height;
-    const oCtx = outputCanvas.getContext('2d');
-    
-    if (sigBackground !== 'transparent') {
-      oCtx.fillStyle = sigBackground;
-      oCtx.fillRect(0, 0, canvas.width, canvas.height);
+    const pts = currentDrawPointsRef.current;
+    if (pts.length > 1) {
+      ctx.strokeStyle = drawPenColor;
+      ctx.fillStyle = drawPenColor;
+      ctx.lineWidth = drawPenThickness;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      const p1 = pts[pts.length - 2];
+      const p2 = pts[pts.length - 1];
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
     }
-    
-    oCtx.drawImage(canvas, 0, 0);
-    const dataUrl = outputCanvas.toDataURL('image/png');
-    downloadDataUrl(dataUrl, 'signature.png');
-    showToast('Signature exported!');
+  };
+
+  const endDrawPad = (e) => {
+    if (!isDrawingSigRef.current) return;
+    isDrawingSigRef.current = false;
+    const canvas = drawCanvasRef.current;
+    if (canvas && e?.pointerId && canvas.releasePointerCapture) {
+      try {
+        canvas.releasePointerCapture(e.pointerId);
+      } catch (err) {}
+    }
+
+    const pts = currentDrawPointsRef.current;
+    if (pts && pts.length > 0) {
+      const newStroke = {
+        points: [...pts],
+        color: drawPenColor,
+        thickness: drawPenThickness
+      };
+      const updated = [...drawStrokesRef.current, newStroke];
+      drawStrokesRef.current = updated;
+      setDrawStrokes(updated);
+      setDrawRedoStack([]);
+      currentDrawPointsRef.current = [];
+    }
+  };
+
+  const undoDrawPad = () => {
+    const current = drawStrokesRef.current;
+    if (current.length === 0) return;
+    const last = current[current.length - 1];
+    const updated = current.slice(0, -1);
+    drawStrokesRef.current = updated;
+    setDrawRedoStack(prev => [...prev, last]);
+    setDrawStrokes(updated);
+    redrawDrawCanvas(updated);
+  };
+
+  const redoDrawPad = () => {
+    if (drawRedoStack.length === 0) return;
+    const next = drawRedoStack[drawRedoStack.length - 1];
+    const updated = [...drawStrokesRef.current, next];
+    drawStrokesRef.current = updated;
+    setDrawRedoStack(prev => prev.slice(0, -1));
+    setDrawStrokes(updated);
+    redrawDrawCanvas(updated);
+  };
+
+  const clearDrawPad = () => {
+    drawStrokesRef.current = [];
+    setDrawStrokes([]);
+    setDrawRedoStack([]);
+    redrawDrawCanvas([]);
+  };
+
+  const downloadDrawnSignature = () => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = canvas.width;
+    exportCanvas.height = canvas.height;
+    const ctx = exportCanvas.getContext('2d');
+
+    if (drawPaper === 'blank') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    } else if (drawPaper === 'tint') {
+      ctx.fillStyle = '#f4f4f6';
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    } else if (drawPaper === 'lined') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      ctx.strokeStyle = '#bae6fd';
+      ctx.lineWidth = 1.5;
+      for (let y = 30; y < exportCanvas.height; y += 30) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(exportCanvas.width, y);
+        ctx.stroke();
+      }
+    } else if (drawPaper === 'custom') {
+      ctx.fillStyle = drawCustomPaperColor || '#fef3c7';
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    }
+
+    ctx.drawImage(canvas, 0, 0);
+    const dataUrl = exportCanvas.toDataURL('image/png');
+    downloadDataUrl(dataUrl, 'my_drawn_signature.png');
+    showToast('Drawn signature downloaded!');
   };
 
   // 4. ENGINE D: Format Converter
@@ -3817,7 +4163,372 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
   return (
     <>
-      {activeTool.engine === 'pixelate-engine' ? (
+      {activeTool.engine === 'sig' ? (
+        // SIGNATURE GENERATOR CUSTOM UI
+        <div className="sig-maker-wrapper">
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Generate Signature'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Type your name or draw your signature in 100+ handwritten fonts. Free and private.'}</p>
+          </div>
+
+          <div className="sig-maker-card">
+            {/* Top Tab Bar */}
+            <div className="sig-tabs-row">
+              <button 
+                type="button"
+                className={`sig-tab-btn ${sigTab === 'text' ? 'active' : ''}`}
+                onClick={() => setSigTab('text')}
+              >
+                <Type size={18} />
+                <span>Text to Signature</span>
+              </button>
+              <button 
+                type="button"
+                className={`sig-tab-btn ${sigTab === 'draw' ? 'active' : ''}`}
+                onClick={() => setSigTab('draw')}
+              >
+                <Edit3 size={18} />
+                <span>Draw Signature</span>
+              </button>
+            </div>
+
+            {sigTab === 'text' ? (
+              <>
+                {/* Text to Signature Toolbar */}
+                <div className="sig-toolbar">
+                  <div className="sig-toolbar-group">
+                    {/* Text Input */}
+                    <div className="sig-input-wrap">
+                      <span className="sig-input-icon" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 'bold' }}>𝐹</span>
+                      <input 
+                        type="text" 
+                        value={sigText} 
+                        onChange={(e) => setSigText(e.target.value)}
+                        placeholder="Type your name..."
+                      />
+                    </div>
+
+                    {/* Font Size Input */}
+                    <div className="sig-size-wrap">
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#64748b', marginRight: '4px' }}>TT</span>
+                      <input 
+                        type="number" 
+                        min={14} 
+                        max={72} 
+                        value={sigFontSize} 
+                        onChange={(e) => setSigFontSize(Math.max(12, Math.min(80, parseInt(e.target.value) || 28)))}
+                      />
+                      <span style={{ fontSize: '12px', color: '#94a3b8' }}>px</span>
+                    </div>
+
+                    {/* Paper Background Selector */}
+                    <div className="sig-paper-selector">
+                      <span className="sig-paper-label">Paper</span>
+                      <button 
+                        type="button"
+                        title="White Paper"
+                        className={`sig-paper-btn sig-paper-blank ${sigPaper === 'blank' ? 'active' : ''}`}
+                        onClick={() => setSigPaper('blank')}
+                      />
+                      <button 
+                        type="button"
+                        title="Tint / Textured Paper"
+                        className={`sig-paper-btn sig-paper-tint ${sigPaper === 'tint' ? 'active' : ''}`}
+                        onClick={() => setSigPaper('tint')}
+                      />
+                      <button 
+                        type="button"
+                        title="Lined Paper"
+                        className={`sig-paper-btn sig-paper-lined ${sigPaper === 'lined' ? 'active' : ''}`}
+                        onClick={() => setSigPaper('lined')}
+                      />
+                      <label 
+                        title="Custom Color Paper"
+                        className={`sig-paper-btn sig-paper-custom ${sigPaper === 'custom' ? 'active' : ''}`}
+                        style={{ backgroundColor: sigPaperCustomColor }}
+                      >
+                        <input 
+                          type="color" 
+                          value={sigPaperCustomColor}
+                          onChange={(e) => { setSigPaperCustomColor(e.target.value); setSigPaper('custom'); }}
+                          style={{ opacity: 0, position: 'absolute', width: '100%', height: '100%', cursor: 'pointer' }}
+                        />
+                      </label>
+                      <button 
+                        type="button"
+                        title="Transparent (No Background)"
+                        className={`sig-paper-btn sig-paper-clear ${sigPaper === 'clear' ? 'active' : ''}`}
+                        onClick={() => setSigPaper('clear')}
+                      >
+                        <span style={{ fontSize: '16px', lineHeight: 1 }}>⊘</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Global Ink Color Selector */}
+                  <div className="sig-toolbar-group" style={{ marginLeft: 'auto' }}>
+                    <span style={{ fontSize: '13px', color: '#64748b', fontWeight: '500' }}>Ink:</span>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      {['#1e3a8a', '#000000', '#2563eb', '#dc2626', '#16a34a'].map(color => (
+                        <div 
+                          key={color}
+                          onClick={() => setSigGlobalInkColor(color)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '3px',
+                            backgroundColor: color,
+                            cursor: 'pointer',
+                            border: sigGlobalInkColor === color ? '2px solid #5b627a' : '1px solid rgba(0,0,0,0.15)',
+                            transform: sigGlobalInkColor === color ? 'scale(1.15)' : 'none',
+                            transition: 'all 0.15s ease'
+                          }}
+                        />
+                      ))}
+                      <label title="Custom Global Ink Color" style={{ display: 'inline-flex', cursor: 'pointer', position: 'relative' }}>
+                        <input 
+                          type="color"
+                          value={sigGlobalInkColor}
+                          onChange={(e) => setSigGlobalInkColor(e.target.value)}
+                          style={{ width: '20px', height: '20px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer' }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Font Preview Grid */}
+                <div className="sig-grid">
+                  {SIGNATURE_FONTS.map(font => {
+                    const setting = getCardSetting(font.name);
+                    const angle = setting.angle;
+                    const variant = setting.variant;
+                    const inkColor = setting.inkColor;
+
+                    let fontStyle = 'normal';
+                    let fontWeight = '400';
+                    if (variant === 1) fontStyle = 'italic';
+                    if (variant === 2) fontWeight = '700';
+
+                    return (
+                      <div key={font.name} className="sig-font-card">
+                        {/* Header: Angle and Variants */}
+                        <div className="sig-font-card-header">
+                          <button 
+                            type="button" 
+                            className="sig-angle-control"
+                            onClick={() => cycleCardAngle(font.name)}
+                            title="Rotate Angle"
+                          >
+                            <RotateCw size={12} />
+                            <span>{angle}</span>
+                          </button>
+
+                          <div className="sig-variant-tabs">
+                            {[0, 1, 2, 3].map(v => (
+                              <button 
+                                key={v}
+                                type="button"
+                                className={`sig-variant-btn ${variant === v ? 'active' : ''}`}
+                                onClick={() => updateCardSetting(font.name, { variant: v })}
+                              >
+                                {v}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Signature Preview Canvas/Area */}
+                        <div 
+                          className={`sig-font-card-body paper-${sigPaper}`}
+                          style={sigPaper === 'custom' ? { backgroundColor: sigPaperCustomColor } : {}}
+                        >
+                          <div 
+                            className="sig-rendered-text"
+                            style={{
+                              fontFamily: font.family,
+                              fontSize: `${sigFontSize}px`,
+                              fontStyle,
+                              fontWeight,
+                              color: inkColor,
+                              transform: `rotate(${angle}deg)`
+                            }}
+                          >
+                            {sigText.trim() || 'Signature'}
+                            {variant === 3 && <div className="sig-flourish-underline" style={{ color: inkColor }} />}
+                          </div>
+                        </div>
+
+                        {/* Footer: Color picker & Download */}
+                        <div className="sig-font-card-footer">
+                          <label 
+                            title="Card Ink Color" 
+                            className="sig-ink-swatch"
+                            style={{ backgroundColor: inkColor }}
+                          >
+                            <input 
+                              type="color"
+                              value={inkColor}
+                              onChange={(e) => updateCardSetting(font.name, { inkColor: e.target.value })}
+                              style={{ opacity: 0, position: 'absolute', width: '100%', height: '100%', cursor: 'pointer' }}
+                            />
+                          </label>
+
+                          <button 
+                            type="button"
+                            className="sig-download-btn"
+                            onClick={() => downloadTextSignature(font.name, font.family)}
+                          >
+                            <Download size={12} />
+                            <span>Download</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              /* Draw Signature Tab */
+              <div className="sig-draw-area">
+                <div 
+                  className={`sig-canvas-container paper-${drawPaper}`}
+                  style={drawPaper === 'custom' ? { backgroundColor: drawCustomPaperColor } : {}}
+                >
+                  <canvas 
+                    ref={drawCanvasRef}
+                    width={800}
+                    height={320}
+                    className="sig-draw-canvas"
+                    onPointerDown={startDrawPad}
+                    onPointerMove={moveDrawPad}
+                    onPointerUp={endDrawPad}
+                    onPointerCancel={endDrawPad}
+                    onPointerLeave={endDrawPad}
+                    style={{ touchAction: 'none' }}
+                  />
+                </div>
+
+                <div className="sig-draw-toolbar">
+                  {/* Ink Color */}
+                  <div className="sig-draw-colors">
+                    <span style={{ fontSize: '13px', color: '#64748b', fontWeight: '500' }}>Ink:</span>
+                    {['#000000', '#1e3a8a', '#2563eb', '#dc2626', '#16a34a'].map(color => (
+                      <div 
+                        key={color}
+                        className={`sig-draw-color-dot ${drawPenColor === color ? 'active' : ''}`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => setDrawPenColor(color)}
+                      />
+                    ))}
+                    <input 
+                      type="color"
+                      value={drawPenColor}
+                      onChange={(e) => setDrawPenColor(e.target.value)}
+                      style={{ width: '22px', height: '22px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                    />
+                  </div>
+
+                  {/* Thickness */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '13px', color: '#64748b', fontWeight: '500' }}>Pen:</span>
+                    <input 
+                      type="range"
+                      min={1}
+                      max={12}
+                      value={drawPenThickness}
+                      onChange={(e) => setDrawPenThickness(parseInt(e.target.value))}
+                      style={{ width: '90px' }}
+                    />
+                    <span style={{ fontSize: '12px', color: '#64748b', width: '28px' }}>{drawPenThickness}px</span>
+                  </div>
+
+                  {/* Paper */}
+                  <div className="sig-paper-selector">
+                    <span className="sig-paper-label">Paper:</span>
+                    <button 
+                      type="button" 
+                      title="White"
+                      className={`sig-paper-btn sig-paper-blank ${drawPaper === 'blank' ? 'active' : ''}`}
+                      onClick={() => setDrawPaper('blank')}
+                    />
+                    <button 
+                      type="button" 
+                      title="Tint"
+                      className={`sig-paper-btn sig-paper-tint ${drawPaper === 'tint' ? 'active' : ''}`}
+                      onClick={() => setDrawPaper('tint')}
+                    />
+                    <button 
+                      type="button" 
+                      title="Lined"
+                      className={`sig-paper-btn sig-paper-lined ${drawPaper === 'lined' ? 'active' : ''}`}
+                      onClick={() => setDrawPaper('lined')}
+                    />
+                    <button 
+                      type="button" 
+                      title="Transparent"
+                      className={`sig-paper-btn sig-paper-clear ${drawPaper === 'clear' ? 'active' : ''}`}
+                      onClick={() => setDrawPaper('clear')}
+                    >
+                      <span style={{ fontSize: '14px', lineHeight: 1 }}>⊘</span>
+                    </button>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="sig-draw-actions">
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ padding: '6px 12px', fontSize: '13px' }}
+                      onClick={undoDrawPad}
+                      disabled={drawStrokes.length === 0}
+                      title="Undo"
+                    >
+                      <Undo size={14} />
+                      <span>Undo</span>
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ padding: '6px 12px', fontSize: '13px' }}
+                      onClick={redoDrawPad}
+                      disabled={drawRedoStack.length === 0}
+                      title="Redo"
+                    >
+                      <Redo size={14} />
+                      <span>Redo</span>
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ padding: '6px 12px', fontSize: '13px', color: '#ef4444' }}
+                      onClick={clearDrawPad}
+                      title="Clear"
+                    >
+                      <Trash size={14} />
+                      <span>Clear</span>
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn btn-primary" 
+                      style={{ padding: '6px 16px', fontSize: '13px' }}
+                      onClick={downloadDrawnSignature}
+                    >
+                      <Download size={14} />
+                      <span>Download</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : activeTool.engine === 'pixelate-engine' ? (
         // PIXELATE CUSTOM UI
         <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
@@ -7325,63 +8036,6 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
                 </div>
               )}
               
-              {activeTool.engine === 'sig' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <span className="panel-section-title">Signature Settings</span>
-                  
-                  <div className="form-group">
-                    <label className="form-label">Pen Color</label>
-                    <div className="color-picker-row">
-                      {['#000000', '#0000ff', '#ff0000', '#009900'].map(c => (
-                        <div 
-                          key={c}
-                          className={`color-picker-dot ${penColor === c ? 'active' : ''}`}
-                          style={{ backgroundColor: c }}
-                          onClick={() => setPenColor(c)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="slider-group">
-                    <div className="slider-label-row">
-                      <span>Pen Thickness</span>
-                      <span className="slider-value">{penThickness}px</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min={1} 
-                      max={12} 
-                      value={penThickness} 
-                      onChange={(e) => setPenThickness(parseInt(e.target.value))}
-                      className="range-slider"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label className="form-label">Background</label>
-                    <select 
-                      value={sigBackground} 
-                      onChange={(e) => setSigBackground(e.target.value)}
-                      className="select-input"
-                    >
-                      <option value="transparent">Transparent (PNG)</option>
-                      <option value="#ffffff">White Background</option>
-                      <option value="#fffbeb">Cream / Yellow Background</option>
-                    </select>
-                  </div>
-                  
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <button className="btn btn-secondary" onClick={clearSigCanvas} style={{ flex: 1 }}>
-                      Clear Board
-                    </button>
-                    <button className="btn btn-primary" onClick={downloadSignature} style={{ flex: 1 }}>
-                      Save Signature
-                    </button>
-                  </div>
-                </div>
-              )}
-              
               {activeTool.engine === 'converter' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <span className="panel-section-title">Conversion Action</span>
@@ -7573,23 +8227,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div className="preview-panel">
               <span className="panel-section-title">Workspace Preview</span>
               
-              {activeTool.engine === 'sig' ? (
-                <canvas 
-                  ref={sigCanvasRef}
-                  width={500}
-                  height={250}
-                  className="sig-canvas"
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDrawing}
-                />
-              ) : (
-                <>
-                  {previewUrl ? (
+              {previewUrl ? (
                     <>
                       <div className="image-preview-container">
                         {selectedFile?.type === 'application/pdf' ? (
@@ -7703,8 +8341,6 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
                       </div>
                     </div>
                   )}
-                </>
-              )}
             </div>
           </div>
         </div>
