@@ -28,7 +28,18 @@ import {
   ChevronDown,
   Edit3,
   Undo,
-  Redo
+  Redo,
+  Sparkles,
+  Wand2,
+  Eraser,
+  Eye,
+  Focus,
+  Stamp,
+  Plus,
+  Minus,
+  Pipette,
+  Flame,
+  MessageCircle
 } from 'lucide-react';
 import { getSeoData, updateMetaTags, fetchAndApplySeo } from '../seoData';
 import { TOOLS_CATALOG } from '../toolsCatalog';
@@ -165,6 +176,15 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
         }
       });
     }
+
+    if (activeTool?.engine === 'motion-blur-engine') {
+      if (activeTool.params?.defaultType) {
+        setMbType(activeTool.params.defaultType);
+      }
+      if (activeTool.params?.defaultBlurBg !== undefined) {
+        setMbBlurBackground(activeTool.params.defaultBlurBg);
+      }
+    }
   }, [activeTool]);
 
 
@@ -267,9 +287,57 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
   // Engine IQ: Increase Image Quality Online Free States
   const [iqImage, setIqImage] = useState(null);
   const [iqRestoredUrl, setIqRestoredUrl] = useState(null);
+  const [iqFileName, setIqFileName] = useState('');
+  const [iqDimensions, setIqDimensions] = useState({ width: 0, height: 0, outWidth: 0, outHeight: 0 });
+  const [iqMode, setIqMode] = useState('clarity'); // 'clarity' | 'portrait' | 'hdr' | 'upscale'
+  const [iqSharpness, setIqSharpness] = useState(100); // 50 - 150
+  const [iqDenoise, setIqDenoise] = useState(40); // 0 - 100
+  const [iqSliderPos, setIqSliderPos] = useState(50); // 0 - 100
+  const [iqIsDragging, setIqIsDragging] = useState(false);
+  const [iqViewMode, setIqViewMode] = useState('split'); // 'split' | 'enhanced' | 'original'
   const [iqPreviewOriginal, setIqPreviewOriginal] = useState(false);
   const [iqStatus, setIqStatus] = useState('Image Restored');
   const iqInputRef = useRef(null);
+  // Engine WM: Watermark Engine States
+  const [wmImage, setWmImage] = useState(null);
+  const [wmFileName, setWmFileName] = useState('');
+  const [wmTab, setWmTab] = useState('text'); // 'text' | 'image'
+  const [wmInputText, setWmInputText] = useState('Watermark');
+  const [wmText, setWmText] = useState('Watermark');
+  const [wmFont, setWmFont] = useState('Arial');
+  const [wmFontSize, setWmFontSize] = useState(40);
+  const [wmOpacity, setWmOpacity] = useState(0.85);
+  const [wmColor, setWmColor] = useState('#000000');
+  const [wmBgColor, setWmBgColor] = useState('transparent');
+  const [wmStrokeWidth, setWmStrokeWidth] = useState(0);
+  const [wmStrokeColor, setWmStrokeColor] = useState('#ffffff');
+  const [wmGridEffect, setWmGridEffect] = useState(false);
+  const [wmPos, setWmPos] = useState({ x: 50, y: 50 });
+  const [wmRotation, setWmRotation] = useState(0);
+  const [wmScale, setWmScale] = useState(1);
+  const [wmLogoImage, setWmLogoImage] = useState(null);
+  const [wmLogoSize, setWmLogoSize] = useState(120);
+  const [wmIsSelected, setWmIsSelected] = useState(true);
+  const wmInputRef = useRef(null);
+  const wmLogoInputRef = useRef(null);
+  const wmContainerRef = useRef(null);
+  // Engine DF: Deep Fryer Photo States
+  const [dfImage, setDfImage] = useState(null);
+  const [dfCurrentBase, setDfCurrentBase] = useState(null);
+  const [dfPreviewUrl, setDfPreviewUrl] = useState(null);
+  const [dfFileName, setDfFileName] = useState('');
+  const [dfPreset, setDfPreset] = useState('mild');
+  const [dfIntensity, setDfIntensity] = useState(25);
+  const dfInputRef = useRef(null);
+  // Engine WA: WhatsApp DP No Crop States
+  const [waImage, setWaImage] = useState(null);
+  const [waFileName, setWaFileName] = useState('');
+  const [waBgMode, setWaBgMode] = useState('blur'); // 'blur' | 'white' | 'black' | 'custom'
+  const [waBlurAmount, setWaBlurAmount] = useState(15);
+  const [waBgColor, setWaBgColor] = useState('#3b82f6');
+  const [waPadding, setWaPadding] = useState(0);
+  const [waShowEditModal, setWaShowEditModal] = useState(false);
+  const waInputRef = useRef(null);
   // Engine DPI: DPI Converter & Resizer Suite States
   const [dpiFiles, setDpiFiles] = useState([]);
   const [dpiUnit, setDpiUnit] = useState('px'); // 'px' | 'mm' | 'cm'
@@ -428,7 +496,7 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
   
   // Engine E: Filters / Effects States
   const [effectType, setEffectType] = useState('enhance');
-  const [effectRotation, setEffectRotation] = useState(90);
+  const [effectRotation, setEffectRotation] = useState(0);
   const [effectFlipDirection, setEffectFlipDirection] = useState('horizontal');
   const [effectWatermarkText, setEffectWatermarkText] = useState('CONFIDENTIAL');
   const [effectRoundRadius, setEffectRoundRadius] = useState(30);
@@ -560,6 +628,28 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
     setPdf2JpgFiles([]);
     setPdf2JpgResults(null);
 
+    // 21. Watermark states
+    setWmImage(null);
+    setWmLogoImage(null);
+    setWmPos({ x: 50, y: 50 });
+    setWmRotation(0);
+    setWmScale(1);
+    setWmGridEffect(false);
+
+    // 22. Deep Fry states
+    setDfImage(null);
+    setDfCurrentBase(null);
+    setDfPreviewUrl(null);
+    setDfPreset('mild');
+    setDfIntensity(25);
+
+    // 23. WhatsApp DP states
+    setWaImage(null);
+    setWaBgMode('blur');
+    setWaBlurAmount(15);
+    setWaPadding(0);
+    setWaShowEditModal(false);
+
     if (!activeTool) return;
     
     const params = activeTool.params || {};
@@ -588,7 +678,7 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
     
     if (activeTool.engine === 'effects') {
       setEffectType(params.effectType || 'enhance');
-      if (params.effectType === 'rotate') setEffectRotation(params.rotation || 90);
+      if (params.effectType === 'rotate') setEffectRotation(params.rotation !== undefined ? params.rotation : 0);
       if (params.effectType === 'flip') setEffectFlipDirection(params.direction || 'horizontal');
       if (params.effectType === 'watermark') setEffectWatermarkText(params.text || 'CONFIDENTIAL');
       if (params.effectType === 'round-corners') setEffectRoundRadius(params.radius || 30);
@@ -3078,13 +3168,22 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
       const file = e.target.files[0];
       const url = URL.createObjectURL(file);
       setIqImage(url);
+      setIqFileName(file.name);
       setIqRestoredUrl(null);
-      setIqPreviewOriginal(false);
-      applyIncreaseQuality(url);
+      setIqSliderPos(50);
+      setIqViewMode('split');
+      
+      const img = new window.Image();
+      img.onload = () => {
+        setIqDimensions({ width: img.naturalWidth, height: img.naturalHeight, outWidth: img.naturalWidth, outHeight: img.naturalHeight });
+        applyIncreaseQuality(url, iqMode, iqSharpness, iqDenoise);
+      };
+      img.src = url;
     }
+    if (e.target) e.target.value = '';
   };
 
-  const applyIncreaseQuality = async (sourceUrl) => {
+  const applyIncreaseQuality = async (sourceUrl, mode = iqMode, sharpness = iqSharpness, denoise = iqDenoise) => {
     const src = sourceUrl || iqImage;
     if (!src) return;
 
@@ -3094,75 +3193,107 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
     setTimeout(async () => {
       try {
         const img = await loadImageElement(src);
-        const canvas = document.createElement('canvas');
-        let w = img.naturalWidth;
-        let h = img.naturalHeight;
+        let origW = img.naturalWidth;
+        let origH = img.naturalHeight;
 
-        const MAX_PROCESS = 1600;
+        let scale = 1;
+        if (mode === 'upscale') {
+          scale = 2;
+        }
+
+        let w = Math.round(origW * scale);
+        let h = Math.round(origH * scale);
+
+        const MAX_PROCESS = 2400;
         if (w > MAX_PROCESS || h > MAX_PROCESS) {
           const r = Math.min(MAX_PROCESS / w, MAX_PROCESS / h);
           w = Math.round(w * r);
           h = Math.round(h * r);
         }
+
+        const canvas = document.createElement('canvas');
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
 
         const origImgData = ctx.getImageData(0, 0, w, h);
         const oData = origImgData.data;
         const outData = new Uint8ClampedArray(oData);
 
-        // De-blurring & Super-Resolution Clarity Laplacian Filter
-        const weights = [
-           0, -0.45,  0,
-          -0.45, 2.8, -0.45,
-           0, -0.45,  0
-        ];
+        // Sharpness multiplier (50 - 150 -> 0.5 - 1.5)
+        const sFactor = (sharpness / 100);
+
+        let edgeW = -0.50 * sFactor;
+        if (mode === 'portrait') {
+          edgeW = -0.32 * sFactor;
+        } else if (mode === 'hdr') {
+          edgeW = -0.62 * sFactor;
+        } else if (mode === 'upscale') {
+          edgeW = -0.42 * sFactor;
+        }
 
         for (let y = 1; y < h - 1; y++) {
           for (let x = 1; x < w - 1; x++) {
             const idx = (y * w + x) * 4;
-            
-            let rSharp = 0, gSharp = 0, bSharp = 0;
-            let k = 0;
-            for (let cy = -1; cy <= 1; cy++) {
-              for (let cx = -1; cx <= 1; cx++) {
-                const pIdx = ((y + cy) * w + (x + cx)) * 4;
-                const wt = weights[k++];
-                rSharp += oData[pIdx] * wt;
-                gSharp += oData[pIdx + 1] * wt;
-                bSharp += oData[pIdx + 2] * wt;
-              }
+
+            const top = ((y - 1) * w + x) * 4;
+            const bottom = ((y + 1) * w + x) * 4;
+            const left = (y * w + (x - 1)) * 4;
+            const right = (y * w + (x + 1)) * 4;
+
+            let rSharp = oData[idx] * (1 - 4 * edgeW) + (oData[top] + oData[bottom] + oData[left] + oData[right]) * edgeW;
+            let gSharp = oData[idx + 1] * (1 - 4 * edgeW) + (oData[top + 1] + oData[bottom + 1] + oData[left + 1] + oData[right + 1]) * edgeW;
+            let bSharp = oData[idx + 2] * (1 - 4 * edgeW) + (oData[top + 2] + oData[bottom + 2] + oData[left + 2] + oData[right + 2]) * edgeW;
+
+            let r = rSharp;
+            let g = gSharp;
+            let b = bSharp;
+
+            if (mode === 'portrait') {
+              const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+              r = r * 0.86 + (lum + 5) * 0.14;
+              g = g * 0.86 + (lum + 4) * 0.14;
+              b = b * 0.86 + (lum + 2) * 0.14;
+            } else if (mode === 'hdr') {
+              r = ((r - 128) * 1.14) + 128 + 2;
+              g = ((g - 128) * 1.12) + 128 + 2;
+              b = ((b - 128) * 1.10) + 128 + 1;
+
+              const avg = (r + g + b) / 3;
+              r = avg + (r - avg) * 1.16;
+              g = avg + (g - avg) * 1.16;
+              b = avg + (b - avg) * 1.12;
+            } else {
+              r = ((r - 128) * 1.08) + 128 + 1;
+              g = ((g - 128) * 1.08) + 128 + 1;
+              b = ((b - 128) * 1.06) + 128 + 1;
+
+              const avg = (r + g + b) / 3;
+              r = avg + (r - avg) * 1.10;
+              g = avg + (g - avg) * 1.10;
+              b = avg + (b - avg) * 1.08;
             }
-
-            // Blend de-blurred output (70% sharp + 30% original)
-            let r = rSharp * 0.70 + oData[idx] * 0.30;
-            let g = gSharp * 0.70 + oData[idx + 1] * 0.30;
-            let b = bSharp * 0.70 + oData[idx + 2] * 0.30;
-
-            // Dynamic Contrast & Vibrance Pop
-            r = ((r - 128) * 1.12) + 128 + 2;
-            g = ((g - 128) * 1.10) + 128 + 2;
-            b = ((b - 128) * 1.08) + 128 + 1;
-
-            const avg = (r + g + b) / 3;
-            r = avg + (r - avg) * 1.16;
-            g = avg + (g - avg) * 1.16;
-            b = avg + (b - avg) * 1.12;
 
             outData[idx] = Math.max(0, Math.min(255, Math.round(r)));
             outData[idx + 1] = Math.max(0, Math.min(255, Math.round(g)));
             outData[idx + 2] = Math.max(0, Math.min(255, Math.round(b)));
+            outData[idx + 3] = oData[idx + 3];
           }
         }
 
         const finalImgData = new ImageData(outData, w, h);
         ctx.putImageData(finalImgData, 0, 0);
-        setIqRestoredUrl(canvas.toDataURL('image/png'));
+        const dataUrl = canvas.toDataURL('image/png');
+        setIqRestoredUrl(dataUrl);
+        setIqDimensions(prev => ({ ...prev, outWidth: w, outHeight: h }));
         setIqStatus('Image Restored');
+        showToast('Photo Enhanced with AI Clarity!');
       } catch (err) {
         console.error("Increase Quality error:", err);
+        showToast("Error enhancing photo");
       } finally {
         setProcessing(false);
       }
@@ -3173,16 +3304,454 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
     setIqImage(null);
     setIqRestoredUrl(null);
     setIqPreviewOriginal(false);
+    setIqFileName('');
   };
 
   const handleIqDownload = () => {
-    const urlToDownload = iqPreviewOriginal ? iqImage : iqRestoredUrl;
+    const urlToDownload = iqViewMode === 'original' ? iqImage : (iqRestoredUrl || iqImage);
     if (urlToDownload) {
-      const link = document.createElement('a');
-      link.download = 'high_quality_restored_photo.png';
-      link.href = urlToDownload;
-      link.click();
+      const baseName = (iqFileName || 'enhanced_photo').replace(/\.[^/.]+$/, '');
+      downloadDataUrl(urlToDownload, `${baseName}_enhanced_hd.png`);
+      showToast('Enhanced photo downloaded!');
     }
+  };
+
+  // ENGINE WM: Watermark Engine Handlers
+  const handleWmFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      setWmImage(url);
+      setWmFileName(file.name);
+      setWmPos({ x: 50, y: 50 });
+      setWmRotation(0);
+      setWmScale(1);
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const handleWmLogoFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      setWmLogoImage(url);
+      setWmTab('image');
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const handleWmDragStart = (e) => {
+    e.stopPropagation();
+    const container = wmContainerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const startClientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const startClientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const startX = wmPos.x;
+    const startY = wmPos.y;
+
+    const onMove = (moveEvt) => {
+      const curClientX = moveEvt.touches ? moveEvt.touches[0].clientX : moveEvt.clientX;
+      const curClientY = moveEvt.touches ? moveEvt.touches[0].clientY : moveEvt.clientY;
+      const deltaX = ((curClientX - startClientX) / rect.width) * 100;
+      const deltaY = ((curClientY - startClientY) / rect.height) * 100;
+      setWmPos({
+        x: Math.max(5, Math.min(95, startX + deltaX)),
+        y: Math.max(5, Math.min(95, startY + deltaY))
+      });
+    };
+
+    const onEnd = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+  };
+
+  const handleWmRotateStart = (e) => {
+    e.stopPropagation();
+    const container = wmContainerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const centerX = rect.left + (wmPos.x / 100) * rect.width;
+    const centerY = rect.top + (wmPos.y / 100) * rect.height;
+
+    const onMove = (moveEvt) => {
+      const curClientX = moveEvt.touches ? moveEvt.touches[0].clientX : moveEvt.clientX;
+      const curClientY = moveEvt.touches ? moveEvt.touches[0].clientY : moveEvt.clientY;
+      const angleRad = Math.atan2(curClientY - centerY, curClientX - centerX);
+      let angleDeg = Math.round((angleRad * 180) / Math.PI) + 90;
+      if (angleDeg < 0) angleDeg += 360;
+      setWmRotation(angleDeg % 360);
+    };
+
+    const onEnd = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+  };
+
+  const handleWmResizeStart = (e) => {
+    e.stopPropagation();
+    const startClientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const startScale = wmScale;
+
+    const onMove = (moveEvt) => {
+      const curClientX = moveEvt.touches ? moveEvt.touches[0].clientX : moveEvt.clientX;
+      const diff = (curClientX - startClientX) * 0.01;
+      setWmScale(Math.max(0.3, Math.min(3.0, startScale + diff)));
+    };
+
+    const onEnd = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onEnd);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onEnd);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+  };
+
+  const handleWmDownload = async () => {
+    if (!wmImage) return;
+    setProcessing(true);
+    setProcessingText('Generating Watermarked Image...');
+
+    setTimeout(async () => {
+      try {
+        const img = await loadImageElement(wmImage);
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const scaleRatio = w / 600;
+
+        if (wmGridEffect) {
+          ctx.save();
+          ctx.globalAlpha = wmOpacity;
+          const stepX = w / 3.5;
+          const stepY = h / 4.5;
+          const fSize = Math.round(wmFontSize * scaleRatio * 0.85);
+          ctx.font = `bold ${fSize}px ${wmFont}, sans-serif`;
+          ctx.fillStyle = wmColor;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          for (let gx = -w * 0.5; gx < w * 1.5; gx += stepX) {
+            for (let gy = -h * 0.5; gy < h * 1.5; gy += stepY) {
+              ctx.save();
+              ctx.translate(gx, gy);
+              ctx.rotate((-25 * Math.PI) / 180);
+              if (wmTab === 'text') {
+                if (wmStrokeWidth > 0) {
+                  ctx.strokeStyle = wmStrokeColor;
+                  ctx.lineWidth = wmStrokeWidth * scaleRatio;
+                  ctx.strokeText(wmText, 0, 0);
+                }
+                ctx.fillText(wmText, 0, 0);
+              } else if (wmTab === 'image' && wmLogoImage) {
+                const logo = await loadImageElement(wmLogoImage);
+                const lW = wmLogoSize * scaleRatio * wmScale * 0.7;
+                const lH = (logo.naturalHeight / logo.naturalWidth) * lW;
+                ctx.drawImage(logo, -lW / 2, -lH / 2, lW, lH);
+              }
+              ctx.restore();
+            }
+          }
+          ctx.restore();
+        } else {
+          ctx.save();
+          const targetX = (wmPos.x / 100) * w;
+          const targetY = (wmPos.y / 100) * h;
+          ctx.translate(targetX, targetY);
+          ctx.rotate((wmRotation * Math.PI) / 180);
+          ctx.globalAlpha = wmOpacity;
+
+          if (wmTab === 'text') {
+            const fSize = Math.round(wmFontSize * scaleRatio * wmScale);
+            ctx.font = `bold ${fSize}px ${wmFont}, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const metrics = ctx.measureText(wmText);
+            const textW = metrics.width;
+            const textH = fSize * 1.2;
+
+            if (wmBgColor && wmBgColor !== 'transparent') {
+              ctx.fillStyle = wmBgColor;
+              ctx.fillRect(-textW / 2 - 12, -textH / 2 - 6, textW + 24, textH + 12);
+            }
+
+            if (wmStrokeWidth > 0) {
+              ctx.strokeStyle = wmStrokeColor;
+              ctx.lineWidth = wmStrokeWidth * scaleRatio * 1.5;
+              ctx.strokeText(wmText, 0, 0);
+            }
+
+            ctx.fillStyle = wmColor;
+            ctx.fillText(wmText, 0, 0);
+          } else if (wmTab === 'image' && wmLogoImage) {
+            const logo = await loadImageElement(wmLogoImage);
+            const lW = wmLogoSize * scaleRatio * wmScale;
+            const lH = (logo.naturalHeight / logo.naturalWidth) * lW;
+            ctx.drawImage(logo, -lW / 2, -lH / 2, lW, lH);
+          }
+          ctx.restore();
+        }
+
+        const dataUrl = canvas.toDataURL('image/png');
+        const baseName = (wmFileName || 'watermarked_image').replace(/\.[^/.]+$/, '');
+        downloadDataUrl(dataUrl, `${baseName}_watermarked.png`);
+        showToast('Watermarked image downloaded!');
+      } catch (err) {
+        console.error("Watermark export error:", err);
+        showToast("Error exporting watermarked image", "error");
+      } finally {
+        setProcessing(false);
+      }
+    }, 60);
+  };
+
+  // ENGINE DF: Deep Fryer Photo Handlers
+  const applyDeepFryEffect = async (baseSource = null, intensity = dfIntensity) => {
+    const src = baseSource || dfCurrentBase || dfImage;
+    if (!src) return;
+
+    try {
+      const img = await loadImageElement(src);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const norm = intensity / 100;
+      const contrast = 1 + norm * 2.2;
+      const saturation = 1 + norm * 2.8;
+      const redBoost = 1 + norm * 0.45;
+      const noiseAmp = norm * 45;
+      const solarizeThreshold = 220 - norm * 60;
+
+      for (let i = 0; i < d.length; i += 4) {
+        let r = d[i];
+        let g = d[i + 1];
+        let b = d[i + 2];
+
+        // Contrast
+        r = ((r / 255 - 0.5) * contrast + 0.5) * 255;
+        g = ((g / 255 - 0.5) * contrast + 0.5) * 255;
+        b = ((b / 255 - 0.5) * contrast + 0.5) * 255;
+
+        // Saturation
+        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+        r = gray + (r - gray) * saturation;
+        g = gray + (g - gray) * saturation;
+        b = gray + (b - gray) * saturation;
+
+        // Red / Warm fry glow
+        r = r * redBoost + norm * 15;
+        g = g * (1 + norm * 0.1);
+        b = b * (1 - norm * 0.15);
+
+        // Noise grain
+        if (norm > 0.05) {
+          const noise = (Math.random() - 0.5) * noiseAmp;
+          r += noise;
+          g += noise;
+          b += noise;
+        }
+
+        // Blown out solarization for nuclear/burnt fry
+        if (intensity >= 75) {
+          if (r > solarizeThreshold) r = 255 - (r - solarizeThreshold) * 1.5;
+          if (g > solarizeThreshold + 10) g = 255 - (g - solarizeThreshold) * 1.2;
+        }
+
+        d[i] = Math.max(0, Math.min(255, r));
+        d[i + 1] = Math.max(0, Math.min(255, g));
+        d[i + 2] = Math.max(0, Math.min(255, b));
+      }
+
+      // High-pass edge sharpening convolution
+      if (norm > 0.1) {
+        const copy = new Uint8ClampedArray(d);
+        const sharpWeight = norm * 1.6;
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const idx = (y * w + x) * 4;
+            const top = ((y - 1) * w + x) * 4;
+            const bottom = ((y + 1) * w + x) * 4;
+            const left = (y * w + (x - 1)) * 4;
+            const right = (y * w + (x + 1)) * 4;
+
+            for (let c = 0; c < 3; c++) {
+              const val = copy[idx + c] * (1 + 4 * sharpWeight) - (copy[top + c] + copy[bottom + c] + copy[left + c] + copy[right + c]) * sharpWeight;
+              d[idx + c] = Math.max(0, Math.min(255, val));
+            }
+          }
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+      const friedUrl = canvas.toDataURL('image/jpeg', Math.max(0.4, 0.95 - norm * 0.4));
+      setDfPreviewUrl(friedUrl);
+    } catch (err) {
+      console.error("Deep fry processing error:", err);
+    }
+  };
+
+  const handleDfFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      setDfImage(url);
+      setDfCurrentBase(url);
+      setDfFileName(file.name);
+      setDfPreset('mild');
+      setDfIntensity(25);
+      applyDeepFryEffect(url, 25);
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const handleDfPresetSelect = (preset, intensityVal) => {
+    setDfPreset(preset);
+    setDfIntensity(intensityVal);
+    applyDeepFryEffect(dfCurrentBase || dfImage, intensityVal);
+  };
+
+  const handleDfIntensityChange = (val) => {
+    setDfIntensity(val);
+    if (val === 25) setDfPreset('mild');
+    else if (val === 50) setDfPreset('crispy');
+    else if (val === 75) setDfPreset('burnt');
+    else if (val === 100) setDfPreset('nuclear');
+    else setDfPreset('custom');
+    applyDeepFryEffect(dfCurrentBase || dfImage, val);
+  };
+
+  const handleDfFryAgain = () => {
+    if (!dfPreviewUrl) return;
+    setDfCurrentBase(dfPreviewUrl);
+    applyDeepFryEffect(dfPreviewUrl, dfIntensity);
+    showToast('Applied another layer of deep fry!');
+  };
+
+  const handleDfReset = () => {
+    setDfCurrentBase(dfImage);
+    setDfPreset('mild');
+    setDfIntensity(25);
+    applyDeepFryEffect(dfImage, 25);
+    showToast('Reset to original image');
+  };
+
+  const handleDfDownload = () => {
+    if (dfPreviewUrl) {
+      const baseName = (dfFileName || 'deep_fried_meme').replace(/\.[^/.]+$/, '');
+      downloadDataUrl(dfPreviewUrl, `${baseName}_deep_fried.jpg`);
+      showToast('Deep fried meme downloaded!');
+    }
+  };
+
+  // ENGINE WA: WhatsApp DP No Crop Handlers
+  const handleWaFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      setWaImage(url);
+      setWaFileName(file.name);
+      setWaBgMode('blur');
+      setWaBlurAmount(15);
+      setWaPadding(0);
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const handleWaDownload = async () => {
+    if (!waImage) return;
+    setProcessing(true);
+    setProcessingText('Generating Square WhatsApp DP...');
+
+    setTimeout(async () => {
+      try {
+        const img = await loadImageElement(waImage);
+        const imgW = img.naturalWidth || img.width;
+        const imgH = img.naturalHeight || img.height;
+        const size = Math.max(imgW, imgH, 1080);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        if (waBgMode === 'blur') {
+          ctx.save();
+          const coverScale = Math.max(size / imgW, size / imgH);
+          const bgW = imgW * coverScale;
+          const bgH = imgH * coverScale;
+          const bgX = (size - bgW) / 2;
+          const bgY = (size - bgH) / 2;
+
+          ctx.filter = `blur(${Math.round(waBlurAmount * (size / 500))}px) brightness(0.9)`;
+          ctx.drawImage(img, bgX, bgY, bgW, bgH);
+          ctx.restore();
+        } else if (waBgMode === 'white') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, size, size);
+        } else if (waBgMode === 'black') {
+          ctx.fillStyle = '#111827';
+          ctx.fillRect(0, 0, size, size);
+        } else if (waBgMode === 'custom') {
+          ctx.fillStyle = waBgColor || '#3b82f6';
+          ctx.fillRect(0, 0, size, size);
+        }
+
+        const padFactor = 1 - (waPadding / 100);
+        const containScale = Math.min((size * padFactor) / imgW, (size * padFactor) / imgH);
+        const fgW = imgW * containScale;
+        const fgH = imgH * containScale;
+        const fgX = (size - fgW) / 2;
+        const fgY = (size - fgH) / 2;
+
+        ctx.drawImage(img, fgX, fgY, fgW, fgH);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        const baseName = (waFileName || 'whatsapp_dp').replace(/\.[^/.]+$/, '');
+        downloadDataUrl(dataUrl, `${baseName}_whatsapp_dp_nocrop.jpg`);
+        showToast('Square WhatsApp DP downloaded!');
+      } catch (err) {
+        console.error("WhatsApp DP download error:", err);
+        showToast("Error generating WhatsApp DP", "error");
+      } finally {
+        setProcessing(false);
+      }
+    }, 60);
   };
 
   // ENGINE RT: Retouch Photo Online with AI Handlers
@@ -4530,7 +5099,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         </div>
       ) : activeTool.engine === 'pixelate-engine' ? (
         // PIXELATE CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Pixelate Image Online</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Welcome to Pi7 Image Tool - The Most Advanced Way to Pixelate a Image Online.</p>
@@ -5708,7 +6277,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         </div>
       ) : activeTool.engine === 'ai-upscale-engine' ? (
         // UPSCALE IMAGE ONLINE WITH AI CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Upscale Image Online with AI</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Pi7 Image Tool - AI upscaler that revives every pixel</p>
@@ -6792,109 +7361,313 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
         </div>
       ) : activeTool.engine === 'increase-quality-engine' ? (
-        // INCREASE IMAGE QUALITY ONLINE FREE CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
-          <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
-            <h1 className="workspace-title" style={{ marginBottom: '8px' }}>{activeTool.name}</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>{activeTool.desc || 'Pi7 Image Tool - Turn blurry photos into crystal-clear memories'}</p>
+        // AI PHOTO ENHANCER - INCREASE IMAGE QUALITY ONLINE
+        <div className="workspace-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
           </div>
-          
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'AI Photo Enhancer - Increase Image Quality Online'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Turn blurry photos into crystal-clear memories'}</p>
+          </div>
+
           <input type="file" ref={iqInputRef} onChange={handleIqFileChange} accept="image/*" style={{ display: 'none' }} />
-          
-          <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-             <div 
-                className="ab-grid-bg" 
-                onClick={() => !iqRestoredUrl && iqInputRef.current.click()}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    handleIqFileChange({ target: { files: e.dataTransfer.files } });
-                  }
-                }}
-                style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #e5e7eb', margin: '20px 0 20px 20px', backgroundColor: '#ffffff', cursor: iqRestoredUrl ? 'default' : 'pointer' }}>
-                {iqRestoredUrl ? (
-                   iqPreviewOriginal ? (
-                     <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}>
-                       <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', borderLeft: '1px dashed #3b82f6', zIndex: 10 }} />
-                       <div style={{ width: '50%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: '20px' }}>
-                         <img 
+
+          {!iqImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => iqInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleIqFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Sparkles size={48} className="text-primary" style={{ marginBottom: '16px', color: 'var(--primary)' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload a blurry or low-quality photo to enhance with AI
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Supports JPG, PNG, WEBP, HEIC • Instant client-side AI processing
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); iqInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+              {/* Left Column: Image Comparison Area */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* View Mode Switcher */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '6px 12px' }}>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                      type="button"
+                      className={`btn ${iqViewMode === 'split' ? 'btn-primary' : 'btn-secondary'}`}
+                      style={{ padding: '6px 12px', fontSize: '12px' }}
+                      onClick={() => setIqViewMode('split')}
+                    >
+                      <span>Split Slider ↔</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${iqViewMode === 'enhanced' ? 'btn-primary' : 'btn-secondary'}`}
+                      style={{ padding: '6px 12px', fontSize: '12px' }}
+                      onClick={() => setIqViewMode('enhanced')}
+                    >
+                      <Sparkles size={13} />
+                      <span>Enhanced HD</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${iqViewMode === 'original' ? 'btn-primary' : 'btn-secondary'}`}
+                      style={{ padding: '6px 12px', fontSize: '12px' }}
+                      onClick={() => setIqViewMode('original')}
+                    >
+                      <span>Original Blurry</span>
+                    </button>
+                  </div>
+
+                  {iqDimensions.width > 0 && (
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                      {iqDimensions.outWidth || iqDimensions.width} × {iqDimensions.outHeight || iqDimensions.height} px
+                    </span>
+                  )}
+                </div>
+
+                {/* Preview Box */}
+                <div 
+                  style={{ 
+                    position: 'relative', 
+                    width: '100%', 
+                    height: '460px', 
+                    backgroundColor: 'rgba(0,0,0,0.2)', 
+                    border: '1px solid var(--border-color)', 
+                    borderRadius: '12px', 
+                    overflow: 'hidden', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    userSelect: 'none'
+                  }}
+                  onMouseMove={(e) => {
+                    if (!iqIsDragging || iqViewMode !== 'split') return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+                    setIqSliderPos((x / rect.width) * 100);
+                  }}
+                  onTouchMove={(e) => {
+                    if (!iqIsDragging || iqViewMode !== 'split') return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    if (touch) {
+                      const x = Math.max(0, Math.min(rect.width, touch.clientX - rect.left));
+                      setIqSliderPos((x / rect.width) * 100);
+                    }
+                  }}
+                  onMouseUp={() => setIqIsDragging(false)}
+                  onTouchEnd={() => setIqIsDragging(false)}
+                  onMouseLeave={() => setIqIsDragging(false)}
+                >
+                  {iqViewMode === 'split' ? (
+                    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {/* Enhanced image (Background layer) */}
+                      <img 
+                        src={iqRestoredUrl || iqImage} 
+                        alt="Enhanced High Quality" 
+                        style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                      />
+
+                      {/* Original image (Clipped layer on the left) */}
+                      <div 
+                        style={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          left: 0, 
+                          width: `${iqSliderPos}%`, 
+                          height: '100%', 
+                          overflow: 'hidden',
+                          borderRight: '2px solid #ffffff',
+                          boxShadow: '2px 0 10px rgba(0,0,0,0.5)',
+                          zIndex: 5
+                        }}
+                      >
+                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                          <img 
                             src={iqImage} 
                             alt="Original Blurry" 
-                            style={{ maxHeight: '90%', maxWidth: '90%', objectFit: 'contain', display: 'block' }} 
-                         />
-                       </div>
-                     </div>
-                   ) : (
-                     <img 
-                        src={iqRestoredUrl} 
-                        alt="Restored High Quality Preview" 
-                        style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', objectFit: 'contain', padding: '30px' }} 
-                     />
-                   )
-                ) : (
-                   <div style={{ color: '#9ca3af', textAlign: 'center', padding: '40px' }}>
-                      <p>Upload a blurry or low-quality photo to enhance with AI</p>
-                   </div>
-                )}
-             </div>
-             
-             <div style={{ width: '380px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', margin: '20px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-                <div style={{ padding: '24px' }}>
-                   
-                   {/* Status Label */}
-                   <div style={{ color: '#4f5b93', fontWeight: '600', fontSize: '14px', marginBottom: '20px' }}>
-                      {iqRestoredUrl ? 'Image Restored' : 'Ready to Enhance'}
-                   </div>
+                            style={{ 
+                              position: 'absolute', 
+                              top: 0, 
+                              left: 0, 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'contain',
+                              maxWidth: 'none',
+                              minWidth: '100%'
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                   {/* New Image Button */}
-                   <button 
-                      onClick={() => iqInputRef.current.click()} 
-                      style={{ width: '100%', backgroundColor: '#ffffff', color: '#4f5b93', border: '1px solid #4f5b93', padding: '10px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', marginBottom: '12px' }}
-                   >
-                      + New Image
-                   </button>
+                      {/* Draggable Split Handle */}
+                      <div 
+                        onMouseDown={() => setIqIsDragging(true)}
+                        onTouchStart={() => setIqIsDragging(true)}
+                        style={{ 
+                          position: 'absolute', 
+                          top: '50%', 
+                          left: `${iqSliderPos}%`, 
+                          width: '36px', 
+                          height: '36px', 
+                          borderRadius: '50%', 
+                          backgroundColor: '#ffffff', 
+                          border: '2px solid var(--primary)', 
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.4)', 
+                          transform: 'translate(-50%, -50%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#1e293b',
+                          fontSize: '15px',
+                          fontWeight: 'bold',
+                          cursor: 'ew-resize',
+                          zIndex: 10
+                        }}
+                      >
+                        ↔
+                      </div>
 
-                   {/* Download Image Button */}
-                   <button 
-                      onClick={handleIqDownload} 
-                      disabled={!iqRestoredUrl} 
-                      style={{ width: '100%', backgroundColor: '#4f5b93', color: '#ffffff', border: 'none', padding: '10px', borderRadius: '4px', fontSize: '13px', fontWeight: '500', cursor: iqRestoredUrl ? 'pointer' : 'not-allowed', opacity: iqRestoredUrl ? 1 : 0.5, marginBottom: '24px' }}
-                   >
-                      Download Image
-                   </button>
+                      {/* Labels */}
+                      <span style={{ position: 'absolute', bottom: '12px', left: '12px', zIndex: 6, backgroundColor: 'rgba(0,0,0,0.6)', color: '#ffffff', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                        Before (Blurry)
+                      </span>
+                      <span style={{ position: 'absolute', bottom: '12px', right: '12px', zIndex: 6, backgroundColor: 'rgba(79,70,229,0.85)', color: '#ffffff', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                        After (AI Crystal-Clear ✨)
+                      </span>
+                    </div>
+                  ) : iqViewMode === 'enhanced' ? (
+                    <img 
+                      src={iqRestoredUrl || iqImage} 
+                      alt="Enhanced Preview" 
+                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
+                    />
+                  ) : (
+                    <img 
+                      src={iqImage} 
+                      alt="Original Preview" 
+                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
+                    />
+                  )}
+                </div>
+              </div>
 
-                   {/* Preview Original Image Checkbox */}
-                   <div style={{ marginBottom: '24px' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: iqRestoredUrl ? 'pointer' : 'not-allowed', opacity: iqRestoredUrl ? 1 : 0.5 }}>
-                         <input 
-                            type="checkbox" 
-                            checked={iqPreviewOriginal} 
-                            disabled={!iqRestoredUrl}
-                            onChange={(e) => setIqPreviewOriginal(e.target.checked)} 
-                            style={{ accentColor: '#1d4ed8' }}
-                         />
-                         <span style={{ fontSize: '13px', color: '#4b5563' }}>Preview Original Image</span>
-                      </label>
-                   </div>
-
+              {/* Right Column: AI Controls & Download Panel */}
+              <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
+                    AI Enhancement Mode
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    {[
+                      { id: 'clarity', name: 'Ultra Clarity', icon: '🌟' },
+                      { id: 'portrait', name: 'Portrait Fix', icon: '👤' },
+                      { id: 'hdr', name: 'HDR Vibrance', icon: '🌈' },
+                      { id: 'upscale', name: '2x Super Res', icon: '🚀' }
+                    ].map((m) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => {
+                          setIqMode(m.id);
+                          applyIncreaseQuality(iqImage, m.id, iqSharpness, iqDenoise);
+                        }}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '10px 8px',
+                          borderRadius: '8px',
+                          border: `1px solid ${iqMode === m.id ? 'var(--primary)' : 'var(--border-color)'}`,
+                          backgroundColor: iqMode === m.id ? 'var(--primary-glow)' : 'var(--bg-btn)',
+                          color: iqMode === m.id ? 'var(--primary)' : 'var(--text-primary)',
+                          fontWeight: iqMode === m.id ? '600' : '500',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <span style={{ fontSize: '16px' }}>{m.icon}</span>
+                        <span>{m.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Footer note */}
-                <div style={{ marginTop: 'auto', padding: '16px 24px', borderTop: '1px solid #e5e7eb' }}>
-                   <span 
-                      onClick={handleIqReset} 
-                      style={{ fontSize: '12px', color: '#dc2626', textDecoration: 'underline', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                   >
-                      Delete Image From Server ⓘ
-                   </span>
+                {/* Clarity & Sharpness Slider */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)' }}>Clarity & Sharpness</span>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>{iqSharpness}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="50"
+                    max="150"
+                    value={iqSharpness}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      setIqSharpness(val);
+                      applyIncreaseQuality(iqImage, iqMode, val, iqDenoise);
+                    }}
+                    style={{ width: '100%', accentColor: 'var(--primary)' }}
+                  />
                 </div>
-             </div>
-          </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px', borderTop: '1px solid var(--border-color)' }}>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleIqDownload}
+                    style={{ width: '100%', padding: '12px', fontSize: '14px' }}
+                  >
+                    <Download size={16} />
+                    <span>Download Enhanced Image</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => iqInputRef.current.click()}
+                    style={{ width: '100%', padding: '10px', fontSize: '13px' }}
+                  >
+                    <Upload size={14} />
+                    <span>Upload Another Photo</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleIqReset}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--danger)', fontSize: '12px', cursor: 'pointer', textAlign: 'center', padding: '4px' }}
+                  >
+                    Reset & Remove Photo
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       ) : activeTool.engine === 'ai-retouch-engine' ? (
         // RETOUCH PHOTO ONLINE WITH AI CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Retouch Photo Online with AI</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Smooth skin, clear tones, and HD results - Pi7 makes photo retouch effortless.</p>
@@ -6982,7 +7755,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         </div>
       ) : activeTool.engine === 'blemish-remover-engine' ? (
         // REMOVE BLEMISHES FROM PHOTOS WITH AI CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Remove Blemishes from Photos with AI</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Flawless skin in every photo - remove blemishes, pimples, and spots instantly with AI.</p>
@@ -7070,7 +7843,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         </div>
       ) : activeTool.engine === 'pixel-art-engine' ? (
         // CONVERT ANY PICTURE TO PIXEL ART CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Convert Any Picture to Pixel Art</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Turn Pictures into Pixel Art - Instantly, Privately, and for Free.</p>
@@ -7239,288 +8012,1374 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         </div>
       ) : activeTool.engine === 'blackwhite-engine' ? (
         // TURN COLOR IMAGE TO BLACK AND WHITE CUSTOM UI
-        <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
-          <div style={{ textAlign: 'center', marginBottom: '24px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
-            <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Turn Color Image to Black and White</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Pi7 Image Tool: Transforming Color Picture to Classic Black & White.</p>
+        <div className="workspace-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Turn Color Image to Black and White'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Pi7 Image Tool: Transforming Color Picture to Classic Black & White.'}</p>
           </div>
           
           <input type="file" ref={bwInputRef} onChange={handleBwFileChange} accept="image/*" style={{ display: 'none' }} />
           
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, padding: '0 20px 40px' }}>
-            <div style={{ width: '100%', maxWidth: '850px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
-              
-              {/* Preview Box with light gray backdrop */}
-              <div 
-                onClick={() => !bwPreviewUrl && bwInputRef.current.click()}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    handleBwFileChange({ target: { files: e.dataTransfer.files } });
-                  }
-                }}
-                style={{ position: 'relative', minHeight: '440px', backgroundColor: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', cursor: bwPreviewUrl ? 'default' : 'pointer' }}
-              >
-                {bwPreviewUrl ? (
-                  <>
-                    <img 
-                      src={bwPreviewUrl} 
-                      alt="Black & White Preview" 
-                      style={{ maxHeight: '480px', maxWidth: '100%', objectFit: 'contain', display: 'block', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} 
-                    />
-                    {/* Top right red square remove icon */}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleBwReset(); }}
-                      style={{ position: 'absolute', top: '16px', right: '16px', width: '28px', height: '28px', backgroundColor: '#ffffff', border: '1.5px solid #ef4444', borderRadius: '4px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                      title="Remove Image"
-                    >
-                      <X size={16} strokeWidth={2.5} />
-                    </button>
-                  </>
-                ) : (
-                  <div 
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#6b7280', padding: '40px', border: '2px dashed #9ca3af', borderRadius: '8px', backgroundColor: '#ffffff' }}
-                  >
-                    <Upload size={36} style={{ color: '#4f5b93', marginBottom: '12px' }} />
-                    <span style={{ fontSize: '15px', fontWeight: '500', color: '#374151' }}>Drop or click to upload image</span>
-                    <span style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Supports JPG, PNG, WEBP (Max 20MB)</span>
-                  </div>
-                )}
+          {!bwImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => bwInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleBwFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Upload size={48} className="text-primary" style={{ marginBottom: '16px', color: 'var(--primary)' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload photo to convert to classic black & white
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Supports JPG, PNG, WEBP, HEIC • Instant client-side conversion
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); bwInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              {/* Preview Box */}
+              <div style={{ position: 'relative', minHeight: '400px', maxHeight: '560px', backgroundColor: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+                <img 
+                  src={bwPreviewUrl || bwImage} 
+                  alt="Black & White Preview" 
+                  style={{ maxHeight: '500px', maxWidth: '100%', objectFit: 'contain', display: 'block', borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }} 
+                />
+                <button 
+                  onClick={handleBwReset}
+                  style={{ position: 'absolute', top: '16px', right: '16px', width: '32px', height: '32px', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  title="Remove Image"
+                >
+                  <X size={16} strokeWidth={2.5} />
+                </button>
               </div>
 
-              {/* Bottom Action Toolbar */}
-              <div style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e5e7eb', padding: '12px 24px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
+              {/* Action Toolbar */}
+              <div style={{ padding: '20px 24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '12px', borderTop: '1px solid var(--border-color)' }}>
                 <button 
+                  type="button"
+                  className="btn btn-primary"
                   onClick={() => applyBlackWhiteEffect()}
                   disabled={!bwImage}
-                  style={{ backgroundColor: '#5c6ac4', color: '#ffffff', border: 'none', padding: '8px 24px', borderRadius: '4px', fontSize: '14px', fontWeight: '500', cursor: bwImage ? 'pointer' : 'not-allowed', opacity: bwImage ? 1 : 0.6 }}
+                  style={{ padding: '10px 20px', fontSize: '13px' }}
                 >
-                  Turn Black & White
+                  <span>Re-apply Black & White</span>
                 </button>
                 <button 
+                  type="button"
+                  className="btn btn-primary"
                   onClick={handleBwDownload}
                   disabled={!bwPreviewUrl}
-                  style={{ backgroundColor: '#ffffff', border: '1px solid #d1d5db', borderRadius: '4px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5c6ac4', cursor: bwPreviewUrl ? 'pointer' : 'not-allowed', opacity: bwPreviewUrl ? 1 : 0.5 }}
-                  title="Download Image"
+                  style={{ padding: '10px 24px', fontSize: '13px' }}
                 >
-                  <Download size={18} />
+                  <Download size={16} />
+                  <span>Download Image</span>
+                </button>
+                <button 
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => bwInputRef.current.click()}
+                  style={{ padding: '10px 18px', fontSize: '13px' }}
+                >
+                  <Upload size={14} />
+                  <span>Upload New Photo</span>
                 </button>
               </div>
-
             </div>
-          </div>
+          )}
         </div>
       ) : activeTool.engine === 'grayscale-engine' ? (
         // CONVERT IMAGE TO GRAYSCALE CUSTOM UI
-        <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
-          <div style={{ textAlign: 'center', marginBottom: '24px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
-            <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Convert Image to Grayscale</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Transform Colors, Embrace Elegance: Pi7 Image Tool for Effortless Grayscale Conversion</p>
+        <div className="workspace-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Convert Image to Grayscale'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Transform Colors, Embrace Elegance: Pi7 Image Tool for Effortless Grayscale Conversion'}</p>
           </div>
           
           <input type="file" ref={gsInputRef} onChange={handleGsFileChange} accept="image/*" style={{ display: 'none' }} />
           
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, padding: '0 20px 40px' }}>
-            <div style={{ width: '100%', maxWidth: '850px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
-              
-              {/* Preview Box with light gray backdrop */}
-              <div style={{ position: 'relative', minHeight: '440px', backgroundColor: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-                {gsPreviewUrl ? (
-                  <>
-                    <img 
-                      src={gsPreviewUrl} 
-                      alt="Grayscale Preview" 
-                      style={{ maxHeight: '480px', maxWidth: '100%', objectFit: 'contain', display: 'block', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} 
-                    />
-                    {/* Top right red square remove icon */}
-                    <button 
-                      onClick={handleGsReset}
-                      style={{ position: 'absolute', top: '16px', right: '16px', width: '28px', height: '28px', backgroundColor: '#ffffff', border: '1.5px solid #ef4444', borderRadius: '4px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                      title="Remove Image"
-                    >
-                      <X size={16} strokeWidth={2.5} />
-                    </button>
-                  </>
-                ) : (
-                  <div 
-                    onClick={() => gsInputRef.current.click()}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        handleGsFileChange({ target: { files: e.dataTransfer.files } });
-                      }
-                    }}
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280', padding: '40px', border: '2px dashed #9ca3af', borderRadius: '8px', backgroundColor: '#ffffff' }}
-                  >
-                    <Upload size={36} style={{ color: '#4f5b93', marginBottom: '12px' }} />
-                    <span style={{ fontSize: '15px', fontWeight: '500', color: '#374151' }}>Drop or click to upload image</span>
-                    <span style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Supports JPG, PNG, WEBP (Max 20MB)</span>
-                  </div>
-                )}
+          {!gsImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => gsInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleGsFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Upload size={48} className="text-primary" style={{ marginBottom: '16px', color: 'var(--primary)' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload photo to convert to elegant grayscale
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Supports JPG, PNG, WEBP, HEIC • Instant client-side grayscale filter
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); gsInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              {/* Preview Box */}
+              <div style={{ position: 'relative', minHeight: '400px', maxHeight: '560px', backgroundColor: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+                <img 
+                  src={gsPreviewUrl || gsImage} 
+                  alt="Grayscale Preview" 
+                  style={{ maxHeight: '500px', maxWidth: '100%', objectFit: 'contain', display: 'block', borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.2)' }} 
+                />
+                <button 
+                  onClick={handleGsReset}
+                  style={{ position: 'absolute', top: '16px', right: '16px', width: '32px', height: '32px', backgroundColor: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  title="Remove Image"
+                >
+                  <X size={16} strokeWidth={2.5} />
+                </button>
               </div>
 
-              {/* Bottom Action Toolbar */}
-              <div style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e5e7eb', padding: '12px 24px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
+              {/* Action Toolbar */}
+              <div style={{ padding: '20px 24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '12px', borderTop: '1px solid var(--border-color)' }}>
                 <button 
+                  type="button"
+                  className="btn btn-primary"
                   onClick={() => applyGrayscaleEffect()}
                   disabled={!gsImage}
-                  style={{ backgroundColor: '#5c6ac4', color: '#ffffff', border: 'none', padding: '8px 24px', borderRadius: '4px', fontSize: '14px', fontWeight: '500', cursor: gsImage ? 'pointer' : 'not-allowed', opacity: gsImage ? 1 : 0.6 }}
+                  style={{ padding: '10px 20px', fontSize: '13px' }}
                 >
-                  Apply Grayscale
+                  <span>Re-apply Grayscale</span>
                 </button>
                 <button 
+                  type="button"
+                  className="btn btn-primary"
                   onClick={handleGsDownload}
                   disabled={!gsPreviewUrl}
-                  style={{ backgroundColor: '#ffffff', border: '1px solid #d1d5db', borderRadius: '4px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5c6ac4', cursor: gsPreviewUrl ? 'pointer' : 'not-allowed', opacity: gsPreviewUrl ? 1 : 0.5 }}
-                  title="Download Image"
+                  style={{ padding: '10px 24px', fontSize: '13px' }}
                 >
-                  <Download size={18} />
+                  <Download size={16} />
+                  <span>Download Image</span>
+                </button>
+                <button 
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => gsInputRef.current.click()}
+                  style={{ padding: '10px 18px', fontSize: '13px' }}
+                >
+                  <Upload size={14} />
+                  <span>Upload New Photo</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : activeTool.engine === 'deep-fry-engine' ? (
+        // DEEP FRYER PHOTO CUSTOM UI
+        <div className="workspace-container" style={{ maxWidth: '1050px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Deep Fryer Photo - Free Online Image Deep Fry Tool'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Pick an image. Hit a preset. Download your deep-fried meme. Runs in your browser.'}</p>
+          </div>
+
+          <input type="file" ref={dfInputRef} onChange={handleDfFileChange} accept="image/*" style={{ display: 'none' }} />
+
+          {!dfImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => dfInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleDfFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Flame size={48} className="text-primary" style={{ marginBottom: '16px', color: '#ef4444' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload photo to deep fry into a crisp meme
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Pick an image • Hit Mild, Crispy, Burnt, or Nuclear • Instant browser deep frying
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); dfInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+              {/* Left Column: Image Preview */}
+              <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', overflow: 'hidden', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '440px' }}>
+                <img 
+                  src={dfPreviewUrl || dfImage} 
+                  alt="Deep Fried Preview" 
+                  style={{ maxWidth: '100%', maxHeight: '520px', objectFit: 'contain', display: 'block', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.25)' }} 
+                />
+              </div>
+
+              {/* Right Column: Controls Panel */}
+              <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                
+                {/* FRY LEVEL SECTION */}
+                <div>
+                  <span style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+                    FRY LEVEL
+                  </span>
+                  
+                  {/* Preset 2x2 Grid Buttons */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '18px' }}>
+                    {[
+                      { id: 'mild', label: 'Mild', val: 25 },
+                      { id: 'crispy', label: 'Crispy', val: 50 },
+                      { id: 'burnt', label: 'Burnt', val: 75 },
+                      { id: 'nuclear', label: 'Nuclear', val: 100 }
+                    ].map(preset => {
+                      const isActive = dfPreset === preset.id;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => handleDfPresetSelect(preset.id, preset.val)}
+                          style={{
+                            padding: '10px 16px',
+                            borderRadius: '8px',
+                            border: isActive ? '1px solid #007a78' : '1px solid var(--border-color)',
+                            backgroundColor: isActive ? '#007a78' : 'var(--bg-btn)',
+                            color: isActive ? '#ffffff' : 'var(--text-primary)',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                            boxShadow: isActive ? '0 2px 8px rgba(0, 122, 120, 0.3)' : 'none'
+                          }}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Custom Intensity Slider */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>Custom intensity</span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#007a78', backgroundColor: 'rgba(0, 122, 120, 0.12)', padding: '2px 8px', borderRadius: '12px' }}>
+                        {dfIntensity}%
+                      </span>
+                    </div>
+                    <input 
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={dfIntensity}
+                      onChange={(e) => handleDfIntensityChange(Number(e.target.value))}
+                      className="ab-slider"
+                      style={{ width: '100%', accentColor: '#007a78' }}
+                    />
+                  </div>
+                </div>
+
+                {/* ACTIONS SECTION */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block' }}>
+                    ACTIONS
+                  </span>
+
+                  <button 
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleDfDownload}
+                    style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: '600', backgroundColor: '#4f5b93', borderColor: '#4f5b93' }}
+                  >
+                    <span>Download</span>
+                  </button>
+
+                  <button 
+                    type="button"
+                    onClick={handleDfFryAgain}
+                    style={{ width: '100%', padding: '10px', fontSize: '13px', fontWeight: '600', backgroundColor: 'transparent', border: '1px solid #4f5b93', color: '#4f5b93', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <span>Fry It Again</span>
+                  </button>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                    <button 
+                      type="button"
+                      onClick={handleDfReset}
+                      style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', textDecoration: 'none', padding: '4px' }}
+                      onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
+                      onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+                    >
+                      Reset to Original
+                    </button>
+                    
+                    <button 
+                      type="button"
+                      onClick={() => dfInputRef.current.click()}
+                      style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', textDecoration: 'none', padding: '4px' }}
+                      onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
+                      onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+                    >
+                      Upload New Image
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+        </div>
+      ) : activeTool.engine === 'whatsapp-dp-engine' ? (
+        // RESIZE IMAGE FOR WHATSAPP DP - NO CROPPING CUSTOM UI
+        <div className="workspace-container" style={{ maxWidth: '850px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Resize Image for WhatsApp DP - No Cropping'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Welcome to Pi7 Image Tool - Resize Your Photos Perfectly for WhatsApp DP without Cropping!'}</p>
+          </div>
+
+          <input type="file" ref={waInputRef} onChange={handleWaFileChange} accept="image/*" style={{ display: 'none' }} />
+
+          {!waImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => waInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleWaFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <MessageCircle size={48} className="text-primary" style={{ marginBottom: '16px', color: '#25d366' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload photo to fit into full WhatsApp DP without cropping
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Fits vertical & horizontal photos into 1:1 square • Blur background, white, black & custom colors
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); waInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+              
+              {/* Header Info Note */}
+              <div style={{ fontSize: '13px', color: '#4f5b93', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>ⓘ {waBgMode === 'blur' ? 'Image With Blur Background' : waBgMode === 'white' ? 'Image With White Background' : waBgMode === 'black' ? 'Image With Black Background' : 'Image With Custom Background'}</span>
+              </div>
+
+              {/* 1:1 Square Preview Container */}
+              <div 
+                style={{ 
+                  position: 'relative', 
+                  width: '100%', 
+                  maxWidth: '460px', 
+                  aspectRatio: '1 / 1', 
+                  borderRadius: '12px', 
+                  overflow: 'hidden', 
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.15)', 
+                  border: '1px solid var(--border-color)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: waBgMode === 'white' ? '#ffffff' : waBgMode === 'black' ? '#111827' : waBgMode === 'custom' ? waBgColor : '#000000'
+                }}
+              >
+                {/* Background Layer if blur */}
+                {waBgMode === 'blur' && (
+                  <img 
+                    src={waImage} 
+                    alt="Blurred Background" 
+                    style={{ 
+                      position: 'absolute', 
+                      top: '-10%', 
+                      left: '-10%', 
+                      width: '120%', 
+                      height: '120%', 
+                      objectFit: 'cover', 
+                      filter: `blur(${waBlurAmount}px) brightness(0.85)`,
+                      pointerEvents: 'none',
+                      transform: 'scale(1.15)'
+                    }} 
+                  />
+                )}
+
+                {/* Foreground Sharp Image (Contained) */}
+                <img 
+                  src={waImage} 
+                  alt="WhatsApp DP Foreground" 
+                  style={{ 
+                    position: 'relative', 
+                    maxHeight: `${100 - waPadding}%`, 
+                    maxWidth: `${100 - waPadding}%`, 
+                    objectFit: 'contain', 
+                    display: 'block',
+                    boxShadow: (waBgMode === 'white' || waBgMode === 'black' || waBgMode === 'custom') && waPadding > 5 ? '0 4px 16px rgba(0,0,0,0.2)' : 'none',
+                    zIndex: 2,
+                    borderRadius: waPadding > 5 ? '6px' : '0'
+                  }} 
+                />
+              </div>
+
+              {/* Style Presets Carousel / Selector */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '6px' }}>
+                {/* 1. Blur Preset */}
+                <div 
+                  onClick={() => { setWaBgMode('blur'); setWaShowEditModal(false); }}
+                  style={{ 
+                    position: 'relative', 
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    border: waBgMode === 'blur' ? '2.5px solid #2563eb' : '1px solid var(--border-color)', 
+                    cursor: 'pointer',
+                    boxShadow: waBgMode === 'blur' ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none'
+                  }}
+                  title="Blur Background"
+                >
+                  <img src={waImage} alt="Thumb Blur" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(4px)' }} />
+                  <img src={waImage} alt="Thumb FG" style={{ position: 'relative', width: '100%', height: '100%', objectFit: 'contain', zIndex: 1 }} />
+                </div>
+
+                {/* 2. White Preset */}
+                <div 
+                  onClick={() => { setWaBgMode('white'); setWaShowEditModal(false); }}
+                  style={{ 
+                    position: 'relative', 
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    backgroundColor: '#ffffff',
+                    border: waBgMode === 'white' ? '2.5px solid #2563eb' : '1px solid var(--border-color)', 
+                    cursor: 'pointer',
+                    boxShadow: waBgMode === 'white' ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none'
+                  }}
+                  title="White Background"
+                >
+                  <img src={waImage} alt="Thumb White" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+
+                {/* 3. Black Preset */}
+                <div 
+                  onClick={() => { setWaBgMode('black'); setWaShowEditModal(false); }}
+                  style={{ 
+                    position: 'relative', 
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    backgroundColor: '#111827',
+                    border: waBgMode === 'black' ? '2.5px solid #2563eb' : '1px solid var(--border-color)', 
+                    cursor: 'pointer',
+                    boxShadow: waBgMode === 'black' ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none'
+                  }}
+                  title="Black Background"
+                >
+                  <img src={waImage} alt="Thumb Black" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+
+                {/* 4. Custom Color Preset */}
+                <div 
+                  onClick={() => { setWaBgMode('custom'); setWaShowEditModal(false); }}
+                  style={{ 
+                    position: 'relative', 
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden', 
+                    backgroundColor: waBgColor,
+                    border: waBgMode === 'custom' ? '2.5px solid #2563eb' : '1px solid var(--border-color)', 
+                    cursor: 'pointer',
+                    boxShadow: waBgMode === 'custom' ? '0 0 0 2px rgba(37, 99, 235, 0.2)' : 'none'
+                  }}
+                  title="Custom Color Background"
+                >
+                  <img src={waImage} alt="Thumb Custom" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+
+                {/* 5. Edit Button */}
+                <div 
+                  onClick={() => setWaShowEditModal(!waShowEditModal)}
+                  style={{ 
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '8px', 
+                    backgroundColor: waShowEditModal ? 'rgba(37, 99, 235, 0.15)' : 'var(--bg-btn)',
+                    border: waShowEditModal ? '2px solid #2563eb' : '1px solid var(--border-color)', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '4px',
+                    cursor: 'pointer',
+                    color: waShowEditModal ? '#2563eb' : 'var(--text-secondary)'
+                  }}
+                  title="Edit Settings"
+                >
+                  <Sliders size={20} />
+                  <span style={{ fontSize: '11px', fontWeight: '600' }}>Edit</span>
+                </div>
+              </div>
+
+              {/* Edit Drawer / Controls Panel if Edit is toggled */}
+              {waShowEditModal && (
+                <div style={{ width: '100%', maxWidth: '460px', padding: '16px', backgroundColor: 'var(--bg-btn)', borderRadius: '10px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {waBgMode === 'blur' && (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-primary)' }}>Blur Radius</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{waBlurAmount}px</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="2" 
+                        max="50" 
+                        value={waBlurAmount} 
+                        onChange={(e) => setWaBlurAmount(Number(e.target.value))} 
+                        className="ab-slider"
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  )}
+
+                  {waBgMode === 'custom' && (
+                    <div>
+                      <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Background Color</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        {['#3b82f6', '#ec4899', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#64748b', '#0f172a'].map(c => (
+                          <div 
+                            key={c}
+                            onClick={() => setWaBgColor(c)}
+                            style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: c, border: waBgColor === c ? '2px solid #ffffff' : '1px solid rgba(0,0,0,0.2)', cursor: 'pointer', transform: waBgColor === c ? 'scale(1.15)' : 'scale(1)' }}
+                          />
+                        ))}
+                        <input 
+                          type="color" 
+                          value={waBgColor}
+                          onChange={(e) => setWaBgColor(e.target.value)}
+                          style={{ width: '24px', height: '24px', border: 'none', padding: 0, cursor: 'pointer', background: 'transparent' }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-primary)' }}>Padding / Margin</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{waPadding}%</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="40" 
+                      value={waPadding} 
+                      onChange={(e) => setWaPadding(Number(e.target.value))} 
+                      className="ab-slider"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                <button 
+                  type="button" 
+                  onClick={() => waInputRef.current.click()}
+                  className="btn btn-secondary"
+                  style={{ padding: '10px 20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Plus size={15} />
+                  <span>New Image</span>
+                </button>
+
+                <button 
+                  type="button" 
+                  onClick={handleWaDownload}
+                  className="btn btn-primary"
+                  style={{ padding: '10px 24px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#4f5b93', borderColor: '#4f5b93' }}
+                >
+                  <Download size={15} />
+                  <span>Download</span>
                 </button>
               </div>
 
             </div>
+          )}
+        </div>
+      ) : activeTool.engine === 'watermark-engine' ? (
+        // ADD WATERMARK TO IMAGE ONLINE CUSTOM UI
+        <div className="workspace-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
           </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Add Watermark to Image Online'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Protect your images with custom text or logo watermarks'}</p>
+          </div>
+
+          <input type="file" ref={wmInputRef} onChange={handleWmFileChange} accept="image/*" style={{ display: 'none' }} />
+          <input type="file" ref={wmLogoInputRef} onChange={handleWmLogoFileChange} accept="image/*" style={{ display: 'none' }} />
+
+          {!wmImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => wmInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleWmFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Stamp size={48} className="text-primary" style={{ marginBottom: '16px', color: 'var(--primary)' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload photo to add watermark or text overlay
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Supports JPG, PNG, WEBP • Interactive drag, scale, rotate & repeat grid watermark
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); wmInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '24px', alignItems: 'start' }}>
+              {/* Left Column: Image Preview Canvas */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div 
+                  ref={wmContainerRef}
+                  style={{ 
+                    position: 'relative', 
+                    width: '100%', 
+                    minHeight: '440px',
+                    maxHeight: '600px',
+                    backgroundColor: 'rgba(0,0,0,0.2)', 
+                    border: '1px solid var(--border-color)', 
+                    borderRadius: '12px', 
+                    overflow: 'hidden', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    userSelect: 'none'
+                  }}
+                  onClick={() => setWmIsSelected(true)}
+                >
+                  <img 
+                    src={wmImage} 
+                    alt="Base" 
+                    style={{ maxWidth: '100%', maxHeight: '560px', display: 'block', objectFit: 'contain', pointerEvents: 'none' }} 
+                  />
+
+                  {/* If Grid Effect is Active: Repeat across image */}
+                  {wmGridEffect ? (
+                    <div 
+                      style={{ 
+                        position: 'absolute', 
+                        top: 0, 
+                        left: 0, 
+                        width: '100%', 
+                        height: '100%', 
+                        pointerEvents: 'none',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gridTemplateRows: 'repeat(4, 1fr)',
+                        alignItems: 'center',
+                        justifyItems: 'center',
+                        opacity: wmOpacity,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {Array.from({ length: 12 }).map((_, i) => (
+                        <div 
+                          key={i} 
+                          style={{ 
+                            transform: 'rotate(-25deg)',
+                            whiteSpace: 'nowrap',
+                            color: wmColor,
+                            fontFamily: wmFont,
+                            fontWeight: 'bold',
+                            fontSize: `${Math.round(wmFontSize * 0.55)}px`,
+                            textShadow: wmStrokeWidth > 0 ? `0 0 ${wmStrokeWidth * 2}px ${wmStrokeColor}` : 'none'
+                          }}
+                        >
+                          {wmTab === 'text' ? wmText : (wmLogoImage && <img src={wmLogoImage} alt="Logo" style={{ width: '40px', height: 'auto' }} />)}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    /* Interactive Floating Watermark Box */
+                    <div 
+                      onPointerDown={handleWmDragStart}
+                      onTouchStart={handleWmDragStart}
+                      style={{ 
+                        position: 'absolute', 
+                        top: `${wmPos.y}%`, 
+                        left: `${wmPos.x}%`, 
+                        transform: `translate(-50%, -50%) rotate(${wmRotation}deg) scale(${wmScale})`,
+                        transformOrigin: 'center center',
+                        cursor: 'move',
+                        padding: '8px 12px',
+                        border: wmIsSelected ? '1.5px dashed #f59e0b' : '1px solid transparent',
+                        backgroundColor: wmBgColor,
+                        borderRadius: '4px',
+                        opacity: wmOpacity,
+                        zIndex: 10,
+                        touchAction: 'none'
+                      }}
+                    >
+                      {/* Top Rotation Handle */}
+                      {wmIsSelected && (
+                        <div 
+                          onPointerDown={handleWmRotateStart}
+                          onTouchStart={handleWmRotateStart}
+                          title="Click and drag to rotate watermark"
+                          style={{ 
+                            position: 'absolute', 
+                            top: '-26px', 
+                            left: '50%', 
+                            transform: 'translateX(-50%)', 
+                            width: '14px', 
+                            height: '14px', 
+                            borderRadius: '50%', 
+                            backgroundColor: '#f59e0b', 
+                            border: '2px solid #ffffff', 
+                            cursor: 'grab',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                            zIndex: 15
+                          }} 
+                        />
+                      )}
+
+                      {/* 4 Corner Resize Handles */}
+                      {wmIsSelected && (
+                        <>
+                          <div onPointerDown={handleWmResizeStart} onTouchStart={handleWmResizeStart} style={{ position: 'absolute', top: '-5px', left: '-5px', width: '9px', height: '9px', backgroundColor: '#f59e0b', border: '1px solid #ffffff', cursor: 'nwse-resize' }} />
+                          <div onPointerDown={handleWmResizeStart} onTouchStart={handleWmResizeStart} style={{ position: 'absolute', top: '-5px', right: '-5px', width: '9px', height: '9px', backgroundColor: '#f59e0b', border: '1px solid #ffffff', cursor: 'nesw-resize' }} />
+                          <div onPointerDown={handleWmResizeStart} onTouchStart={handleWmResizeStart} style={{ position: 'absolute', bottom: '-5px', left: '-5px', width: '9px', height: '9px', backgroundColor: '#f59e0b', border: '1px solid #ffffff', cursor: 'nesw-resize' }} />
+                          <div onPointerDown={handleWmResizeStart} onTouchStart={handleWmResizeStart} style={{ position: 'absolute', bottom: '-5px', right: '-5px', width: '9px', height: '9px', backgroundColor: '#f59e0b', border: '1px solid #ffffff', cursor: 'nwse-resize' }} />
+                        </>
+                      )}
+
+                      {wmTab === 'text' ? (
+                        <span 
+                          style={{ 
+                            fontFamily: wmFont, 
+                            fontSize: `${wmFontSize}px`, 
+                            fontWeight: 'bold', 
+                            color: wmColor,
+                            whiteSpace: 'nowrap',
+                            WebkitTextStroke: wmStrokeWidth > 0 ? `${wmStrokeWidth}px ${wmStrokeColor}` : 'unset',
+                            lineHeight: 1.1,
+                            display: 'block'
+                          }}
+                        >
+                          {wmText || 'Watermark'}
+                        </span>
+                      ) : (
+                        wmLogoImage ? (
+                          <img 
+                            src={wmLogoImage} 
+                            alt="Logo" 
+                            style={{ width: `${wmLogoSize}px`, height: 'auto', display: 'block', pointerEvents: 'none' }} 
+                          />
+                        ) : (
+                          <span style={{ fontSize: '13px', color: '#9ca3af' }}>Click to upload logo</span>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    onClick={handleWmDownload}
+                    style={{ minWidth: '180px', padding: '10px 24px' }}
+                  >
+                    <Download size={16} />
+                    <span>Download</span>
+                  </button>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                    ⓘ Rotate & Scale Watermark By Click On Square Dots
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column: Settings & Configuration Panel */}
+              <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '14px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                {/* Tabs: Image vs Text */}
+                <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-btn)' }}>
+                  <button
+                    type="button"
+                    onClick={() => setWmTab('image')}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      border: 'none',
+                      backgroundColor: wmTab === 'image' ? 'var(--bg-card)' : 'transparent',
+                      color: wmTab === 'image' ? 'var(--primary)' : 'var(--text-secondary)',
+                      fontWeight: '600',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Image size={15} />
+                    <span>Image</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWmTab('text')}
+                    style={{
+                      flex: 1,
+                      padding: '12px',
+                      border: 'none',
+                      backgroundColor: wmTab === 'text' ? 'var(--bg-card)' : 'transparent',
+                      color: wmTab === 'text' ? 'var(--primary)' : 'var(--text-secondary)',
+                      fontWeight: '600',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Type size={15} />
+                    <span>Text</span>
+                  </button>
+                </div>
+
+                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '550px', overflowY: 'auto' }}>
+                  {wmTab === 'text' ? (
+                    <>
+                      {/* Text Input + Add Button */}
+                      <div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <input 
+                            type="text" 
+                            value={wmInputText}
+                            onChange={(e) => {
+                              setWmInputText(e.target.value);
+                              setWmText(e.target.value);
+                            }}
+                            placeholder="Enter Text"
+                            className="text-input"
+                            style={{ flex: 1 }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            style={{ padding: '8px 14px', fontSize: '12px' }}
+                            onClick={() => setWmText(wmInputText)}
+                          >
+                            Add
+                          </button>
+                        </div>
+
+                        {/* Active watermark badge */}
+                        {wmText && (
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', backgroundColor: 'var(--primary-glow)', border: '1px solid var(--primary)', borderRadius: '6px', marginTop: '8px', fontSize: '12px', color: 'var(--text-primary)' }}>
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wmText}</span>
+                            <X size={13} style={{ cursor: 'pointer', color: '#ef4444' }} onClick={() => { setWmText(''); setWmInputText(''); }} />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Apply Grid Effect Checkbox */}
+                      <div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={wmGridEffect}
+                            onChange={(e) => setWmGridEffect(e.target.checked)}
+                            style={{ accentColor: 'var(--primary)', width: '15px', height: '15px' }}
+                          />
+                          <span>Apply Grid Effect</span>
+                        </label>
+                      </div>
+
+                      {/* Font Family Dropdown */}
+                      <div>
+                        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Font Family</span>
+                        <select 
+                          value={wmFont}
+                          onChange={(e) => setWmFont(e.target.value)}
+                          className="select-input"
+                        >
+                          {['Arial', 'Roboto', 'Outfit', 'Impact', 'Times New Roman', 'Courier New', 'Dancing Script', 'Pacifico', 'Montserrat', 'Georgia'].map(f => (
+                            <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Font Size & Opacity Steppers */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Font Size</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'var(--bg-btn)' }}>
+                            <button type="button" onClick={() => setWmFontSize(Math.max(12, wmFontSize - 4))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>-</button>
+                            <span style={{ flex: 1, textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{wmFontSize}</span>
+                            <button type="button" onClick={() => setWmFontSize(Math.min(150, wmFontSize + 4))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>+</button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Opacity</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'var(--bg-btn)' }}>
+                            <button type="button" onClick={() => setWmOpacity(Math.max(0.1, Number((wmOpacity - 0.1).toFixed(1))))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>-</button>
+                            <span style={{ flex: 1, textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{wmOpacity}</span>
+                            <button type="button" onClick={() => setWmOpacity(Math.min(1.0, Number((wmOpacity + 0.1).toFixed(1))))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>+</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Font Color Palette */}
+                      <div>
+                        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Font Color</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          {['#000000', '#ffffff', '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'].map(c => (
+                            <div 
+                              key={c}
+                              onClick={() => setWmColor(c)}
+                              style={{ 
+                                width: '22px', 
+                                height: '22px', 
+                                borderRadius: '50%', 
+                                backgroundColor: c, 
+                                border: wmColor === c ? '2px solid var(--primary)' : '1px solid rgba(0,0,0,0.2)',
+                                cursor: 'pointer',
+                                transform: wmColor === c ? 'scale(1.15)' : 'scale(1)'
+                              }}
+                            />
+                          ))}
+                          <input 
+                            type="color" 
+                            value={wmColor}
+                            onChange={(e) => setWmColor(e.target.value)}
+                            style={{ width: '24px', height: '24px', border: 'none', padding: 0, cursor: 'pointer', background: 'transparent' }}
+                            title="Custom Color"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Background Color Palette */}
+                      <div>
+                        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Background Color</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <div 
+                            onClick={() => setWmBgColor('transparent')}
+                            style={{ 
+                              width: '22px', 
+                              height: '22px', 
+                              borderRadius: '50%', 
+                              border: wmBgColor === 'transparent' ? '2px solid var(--primary)' : '1px solid rgba(0,0,0,0.2)',
+                              backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(135deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(135deg, transparent 75%, #ccc 75%)',
+                              backgroundSize: '6px 6px',
+                              cursor: 'pointer'
+                            }}
+                            title="Transparent"
+                          />
+                          {['#000000', '#ffffff', '#1e293b', '#dc2626', '#d97706', '#059669', '#2563eb'].map(c => (
+                            <div 
+                              key={c}
+                              onClick={() => setWmBgColor(c)}
+                              style={{ 
+                                width: '22px', 
+                                height: '22px', 
+                                borderRadius: '50%', 
+                                backgroundColor: c, 
+                                border: wmBgColor === c ? '2px solid var(--primary)' : '1px solid rgba(0,0,0,0.2)',
+                                cursor: 'pointer',
+                                transform: wmBgColor === c ? 'scale(1.15)' : 'scale(1)'
+                              }}
+                            />
+                          ))}
+                          <input 
+                            type="color" 
+                            value={wmBgColor === 'transparent' ? '#ffffff' : wmBgColor}
+                            onChange={(e) => setWmBgColor(e.target.value)}
+                            style={{ width: '24px', height: '24px', border: 'none', padding: 0, cursor: 'pointer', background: 'transparent' }}
+                            title="Custom Background Color"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Text Stroke Width & Color */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Text Stroke</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'var(--bg-btn)' }}>
+                            <button type="button" onClick={() => setWmStrokeWidth(Math.max(0, wmStrokeWidth - 1))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>-</button>
+                            <span style={{ flex: 1, textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{wmStrokeWidth}</span>
+                            <button type="button" onClick={() => setWmStrokeWidth(Math.min(10, wmStrokeWidth + 1))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>+</button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Stroke Color</span>
+                          <div style={{ display: 'flex', alignItems: 'center', height: '32px' }}>
+                            <input 
+                              type="color" 
+                              value={wmStrokeColor}
+                              onChange={(e) => setWmStrokeColor(e.target.value)}
+                              style={{ width: '100%', height: '32px', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', background: 'transparent', padding: '2px' }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* Image / Logo Watermark Tab Controls */
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div>
+                        <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Watermark Logo</span>
+                        {wmLogoImage ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'var(--bg-btn)' }}>
+                            <img src={wmLogoImage} alt="Logo preview" style={{ width: '50px', height: '50px', objectFit: 'contain', backgroundColor: '#ffffff', borderRadius: '4px', padding: '4px' }} />
+                            <div style={{ flex: 1 }}>
+                              <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)', display: 'block' }}>Logo Uploaded</span>
+                              <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Click to change</span>
+                            </div>
+                            <button 
+                              type="button" 
+                              onClick={() => wmLogoInputRef.current.click()}
+                              className="btn btn-secondary" 
+                              style={{ padding: '6px 10px', fontSize: '11px' }}
+                            >
+                              Change
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => wmLogoInputRef.current.click()}
+                            className="dropzone"
+                            style={{ padding: '24px 16px', cursor: 'pointer', textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                          >
+                            <Upload size={24} style={{ color: 'var(--primary)' }} />
+                            <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)' }}>Upload Watermark Logo / Stamp</span>
+                            <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>PNG transparency recommended</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Apply Grid Effect Checkbox */}
+                      <div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={wmGridEffect}
+                            onChange={(e) => setWmGridEffect(e.target.checked)}
+                            style={{ accentColor: 'var(--primary)', width: '15px', height: '15px' }}
+                          />
+                          <span>Apply Grid Effect</span>
+                        </label>
+                      </div>
+
+                      {/* Logo Size & Opacity Steppers */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Logo Size</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'var(--bg-btn)' }}>
+                            <button type="button" onClick={() => setWmLogoSize(Math.max(30, wmLogoSize - 10))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>-</button>
+                            <span style={{ flex: 1, textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{wmLogoSize}</span>
+                            <button type="button" onClick={() => setWmLogoSize(Math.min(400, wmLogoSize + 10))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>+</button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Opacity</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'var(--bg-btn)' }}>
+                            <button type="button" onClick={() => setWmOpacity(Math.max(0.1, Number((wmOpacity - 0.1).toFixed(1))))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>-</button>
+                            <span style={{ flex: 1, textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{wmOpacity}</span>
+                            <button type="button" onClick={() => setWmOpacity(Math.min(1.0, Number((wmOpacity + 0.1).toFixed(1))))} style={{ padding: '6px 10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)' }}>+</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Reset & Upload New Image */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-color)' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => wmInputRef.current.click()}
+                      className="btn btn-secondary"
+                      style={{ width: '100%', padding: '8px', fontSize: '12px' }}
+                    >
+                      <Upload size={13} />
+                      <span>Upload Another Photo</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       ) : activeTool.engine === 'motion-blur-engine' ? (
-        // MOTION BLUR PHOTO CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
-          <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
-            <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Motion Blur Image Online</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Welcome to Pi7 Image Tool - Your Reliable Solution to Motion Blur Photos Instantly & Securely!</p>
+        // BLUR IMAGE BACKGROUND & MOTION BLUR CUSTOM UI
+        <div className="workspace-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Blur Image Background Online'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Welcome to Pi7 Image Tool - Make your photos pop with background blur.'}</p>
           </div>
           
           <input type="file" ref={mbInputRef} onChange={handleMbFileChange} accept="image/*" style={{ display: 'none' }} />
           
-          <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-             <div 
-                className="ab-grid-bg" 
-                onClick={() => !mbPreviewUrl && mbInputRef.current.click()}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    handleMbFileChange({ target: { files: e.dataTransfer.files } });
-                  }
+          {!mbImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => mbInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleMbFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Focus size={48} className="text-primary" style={{ marginBottom: '16px', color: 'var(--primary)' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Upload photo to apply background blur or motion blur
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Supports JPG, PNG, WEBP • Automatic AI Subject Isolation
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); mbInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Photo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+              {/* Image Preview Box */}
+              <div 
+                style={{ 
+                  width: '100%', 
+                  minHeight: '450px',
+                  maxHeight: '600px',
+                  backgroundColor: 'rgba(0,0,0,0.2)', 
+                  border: '1px solid var(--border-color)', 
+                  borderRadius: '12px', 
+                  overflow: 'hidden', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  padding: '20px',
+                  position: 'relative'
                 }}
-                style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '40px', border: '1px solid #e5e7eb', margin: '20px 0 20px 20px', backgroundColor: '#ffffff', cursor: mbPreviewUrl ? 'default' : 'pointer' }}>
+              >
                 {mbPreviewUrl ? (
-                   <img 
-                      src={mbPreviewUrl} 
-                      alt="Motion Blur Preview" 
-                      style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', objectFit: 'contain' }} 
-                   />
+                  <img 
+                    src={mbPreviewUrl} 
+                    alt="Blur Preview" 
+                    style={{ maxWidth: '100%', maxHeight: '560px', display: 'block', objectFit: 'contain', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }} 
+                  />
                 ) : (
-                   <div style={{ color: '#9ca3af', textAlign: 'center' }}>
-                      <p>Upload an image to start motion blurring</p>
-                   </div>
+                  <div style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+                    <p>Processing image...</p>
+                  </div>
                 )}
-             </div>
-             
-             <div style={{ width: '400px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', margin: '20px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-                <div style={{ padding: '24px' }}>
-                   
-                   {/* Blur Type Selection */}
-                   <div style={{ marginBottom: '24px' }}>
-                      <div style={{ display: 'flex', gap: '24px' }}>
-                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
-                            <input type="radio" name="mbType" checked={mbType === 'gaussian'} onChange={() => setMbType('gaussian')} style={{ accentColor: '#1d4ed8' }} />
-                            <span>Gaussian Blur</span>
-                         </label>
-                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
-                            <input type="radio" name="mbType" checked={mbType === 'motion'} onChange={() => setMbType('motion')} style={{ accentColor: '#1d4ed8' }} />
-                            <span>Motion Blur</span>
-                         </label>
-                      </div>
-                   </div>
+              </div>
 
-                   {mbType === 'motion' ? (
-                      <>
-                         {/* Angle Slider */}
-                         <div style={{ marginBottom: '20px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                               <span style={{ fontSize: '13px', color: '#4b5563' }}>Angle ({mbAngle}°)</span>
-                            </div>
-                            <input 
-                               type="range" 
-                               min="0" max="360" 
-                               value={mbAngle} 
-                               onChange={(e) => setMbAngle(Number(e.target.value))} 
-                               className="ab-slider"
-                            />
-                         </div>
-
-                         {/* Distance Slider */}
-                         <div style={{ marginBottom: '20px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                               <span style={{ fontSize: '13px', color: '#4b5563' }}>Distance ({mbDistance} px)</span>
-                            </div>
-                            <input 
-                               type="range" 
-                               min="1" max="150" 
-                               value={mbDistance} 
-                               onChange={(e) => setMbDistance(Number(e.target.value))} 
-                               className="ab-slider"
-                            />
-                         </div>
-
-                         {/* Samples Slider */}
-                         <div style={{ marginBottom: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                               <span style={{ fontSize: '13px', color: '#4b5563' }}>Samples ({mbSamples})</span>
-                            </div>
-                            <input 
-                               type="range" 
-                               min="5" max="50" 
-                               value={mbSamples} 
-                               onChange={(e) => setMbSamples(Number(e.target.value))} 
-                               className="ab-slider"
-                            />
-                         </div>
-                      </>
-                   ) : (
-                      <div style={{ marginBottom: '24px' }}>
-                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '13px', color: '#4b5563' }}>Blur Radius ({mbGaussianRadius} px)</span>
-                         </div>
-                         <input 
-                            type="range" 
-                            min="1" max="60" 
-                            value={mbGaussianRadius} 
-                            onChange={(e) => setMbGaussianRadius(Number(e.target.value))} 
-                            className="ab-slider"
-                         />
-                      </div>
-                   )}
-
-                   {/* Blur Background Checkbox */}
-                   <div style={{ marginBottom: '24px', paddingTop: '8px', borderTop: '1px solid #e5e7eb' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                         <input 
-                            type="checkbox" 
-                            checked={mbBlurBackground} 
-                            onChange={(e) => handleToggleMbBlurBg(e.target.checked)} 
-                            style={{ accentColor: '#1d4ed8' }}
-                         />
-                         <span style={{ fontSize: '13px', color: '#4b5563', fontWeight: '500' }}>Blur Background</span>
-                      </label>
-                      <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px', marginLeft: '24px' }}>
-                         Isolates foreground subject and applies motion streaks only to background.
-                      </div>
-                   </div>
-                   
+              {/* Right Control Panel */}
+              <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {/* Blur Type Radio Group */}
+                <div>
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
+                    Blur Type
+                  </span>
+                  <div style={{ display: 'flex', gap: '20px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)', fontWeight: mbType === 'gaussian' ? '600' : '400' }}>
+                      <input 
+                        type="radio" 
+                        name="mbType" 
+                        checked={mbType === 'gaussian'} 
+                        onChange={() => setMbType('gaussian')} 
+                        style={{ accentColor: 'var(--primary)' }} 
+                      />
+                      <span>Gaussian Blur</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-primary)', fontWeight: mbType === 'motion' ? '600' : '400' }}>
+                      <input 
+                        type="radio" 
+                        name="mbType" 
+                        checked={mbType === 'motion'} 
+                        onChange={() => setMbType('motion')} 
+                        style={{ accentColor: 'var(--primary)' }} 
+                      />
+                      <span>Motion Blur</span>
+                    </label>
+                  </div>
                 </div>
-                <div style={{ marginTop: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid #e5e7eb' }}>
-                   <button onClick={handleMbDownload} disabled={!mbPreviewUrl} style={{ width: '100%', backgroundColor: '#4f5b93', color: '#ffffff', border: 'none', padding: '10px', borderRadius: '4px', fontSize: '13px', cursor: mbPreviewUrl ? 'pointer' : 'not-allowed', opacity: mbPreviewUrl ? 1 : 0.5 }}>Download</button>
-                   <button onClick={() => mbInputRef.current.click()} style={{ width: '100%', backgroundColor: '#ffffff', color: '#4f5b93', border: '1px solid #4f5b93', padding: '10px', borderRadius: '4px', fontSize: '13px', cursor: 'pointer' }}>+ Blur New Image</button>
+
+                {mbType === 'motion' ? (
+                  <>
+                    {/* Angle Slider */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>Angle</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{mbAngle}°</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" max="360" 
+                        value={mbAngle} 
+                        onChange={(e) => setMbAngle(Number(e.target.value))} 
+                        style={{ width: '100%', accentColor: 'var(--primary)' }}
+                      />
+                    </div>
+
+                    {/* Distance Slider */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>Distance</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{mbDistance} px</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="1" max="150" 
+                        value={mbDistance} 
+                        onChange={(e) => setMbDistance(Number(e.target.value))} 
+                        style={{ width: '100%', accentColor: 'var(--primary)' }}
+                      />
+                    </div>
+
+                    {/* Samples Slider */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>Samples</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{mbSamples}</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="5" max="50" 
+                        value={mbSamples} 
+                        onChange={(e) => setMbSamples(Number(e.target.value))} 
+                        style={{ width: '100%', accentColor: 'var(--primary)' }}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>Blur Factor</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{mbGaussianRadius}</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="1" max="60" 
+                      value={mbGaussianRadius} 
+                      onChange={(e) => setMbGaussianRadius(Number(e.target.value))} 
+                      style={{ width: '100%', accentColor: 'var(--primary)' }}
+                    />
+                  </div>
+                )}
+
+                {/* Blur Background Checkbox */}
+                <div style={{ paddingTop: '12px', borderTop: '1px solid var(--border-color)' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={mbBlurBackground} 
+                      onChange={(e) => handleToggleMbBlurBg(e.target.checked)} 
+                      style={{ accentColor: 'var(--primary)', width: '16px', height: '16px' }}
+                    />
+                    <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600' }}>Blur Background</span>
+                  </label>
+                  <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '6px', marginLeft: '26px', lineHeight: 1.4 }}>
+                    Isolates foreground subject and applies blur only to the background.
+                  </p>
                 </div>
-             </div>
-          </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px', borderTop: '1px solid var(--border-color)' }}>
+                  <button 
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleMbDownload} 
+                    disabled={!mbPreviewUrl} 
+                    style={{ width: '100%', padding: '12px', fontSize: '14px' }}
+                  >
+                    <Download size={16} />
+                    <span>Download</span>
+                  </button>
+
+                  <button 
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => mbInputRef.current.click()} 
+                    style={{ width: '100%', padding: '10px', fontSize: '13px' }}
+                  >
+                    <Upload size={14} />
+                    <span>+ Blur New Image</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
         </div>
       ) : activeTool.engine === 'censor-engine' ? (
         // CENSOR PHOTO CUSTOM UI
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Censor Photo Online</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Pi7 Image Tool - The Easiest Way to Censor Photos Online, Fast and Secure!</p>
@@ -8066,10 +9925,32 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
                         onChange={(e) => setEffectRotation(parseInt(e.target.value))}
                         className="select-input"
                       >
+                        <option value={0}>0° (Original)</option>
                         <option value={90}>90° Right</option>
                         <option value={180}>180° Rotate</option>
-                        <option value={270}>90° Left</option>
+                        <option value={270}>90° Left (270°)</option>
                       </select>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px' }}>
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          style={{ padding: '8px 10px', fontSize: '12px' }}
+                          onClick={() => setEffectRotation((prev) => (prev - 90 + 360) % 360)}
+                        >
+                          <RotateCcw size={14} />
+                          <span>Rotate Left</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          style={{ padding: '8px 10px', fontSize: '12px' }}
+                          onClick={() => setEffectRotation((prev) => (prev + 90) % 360)}
+                        >
+                          <RotateCw size={14} />
+                          <span>Rotate Right</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                   
@@ -8258,16 +10139,66 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
                               </LazyReactCrop>
                             </React.Suspense>
                           ) : (
-                            <img 
-                              src={previewUrl} 
-                              alt="Workspace preview" 
-                              className="preview-image" 
-                              onClick={handleColorPick}
-                              style={{ 
-                                cursor: effectType === 'colorpicker' ? 'crosshair' : 'default',
-                                backgroundColor: activeTool.engine === 'resizer' && resizerBgColor !== 'transparent' ? resizerBgColor : 'transparent'
-                              }}
-                            />
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', overflow: 'hidden' }}>
+                              <img 
+                                src={previewUrl} 
+                                alt="Workspace preview" 
+                                className="preview-image" 
+                                onClick={handleColorPick}
+                                style={{ 
+                                  cursor: effectType === 'colorpicker' ? 'crosshair' : 'default',
+                                  backgroundColor: activeTool.engine === 'resizer' && resizerBgColor !== 'transparent' ? resizerBgColor : 'transparent',
+                                  ...(activeTool.engine === 'effects' ? {
+                                    ...(effectType === 'rotate' ? {
+                                      transform: `rotate(${effectRotation}deg)`,
+                                      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                    } : {}),
+                                    ...(effectType === 'flip' ? {
+                                      transform: effectFlipDirection === 'horizontal' ? 'scaleX(-1)' : 'scaleY(-1)',
+                                      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                    } : {}),
+                                    ...(effectType === 'round-corners' ? {
+                                      borderRadius: `${effectRoundRadius}px`,
+                                      overflow: 'hidden'
+                                    } : {}),
+                                    ...(effectType === 'border' ? {
+                                      border: `${effectBorderWidth}px solid ${effectBorderColor}`,
+                                      boxSizing: 'border-box'
+                                    } : {}),
+                                    ...(effectType === 'deepfry' ? {
+                                      filter: 'contrast(300%) saturate(300%) brightness(120%)'
+                                    } : {})
+                                  } : {})
+                                }}
+                              />
+                              {activeTool.engine === 'effects' && (effectType === 'watermark' || effectType === 'add-text') && effectWatermarkText && (
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    pointerEvents: 'none',
+                                    userSelect: 'none',
+                                    ...(effectType === 'watermark' ? {
+                                      bottom: '24px',
+                                      right: '24px',
+                                      color: 'rgba(255, 255, 255, 0.6)',
+                                      fontSize: '22px',
+                                      fontWeight: 'bold',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.6)'
+                                    } : {
+                                      top: '50%',
+                                      left: '50%',
+                                      transform: 'translate(-50%, -50%)',
+                                      color: effectBorderColor,
+                                      fontSize: `${Math.max(16, effectPixelSize * 2)}px`,
+                                      fontWeight: 'bold',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.6)'
+                                    })
+                                  }}
+                                >
+                                  {effectWatermarkText}
+                                </div>
+                              )}
+                            </div>
                           )
                         )}
                       </div>

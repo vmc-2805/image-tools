@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layers, ChevronDown, Moon, Sun, ArrowLeft } from 'lucide-react';
 import { TOOLS_CATALOG } from '../toolsCatalog';
+import { getToolIcon } from '../toolIcons';
 
 export default function Header({ 
   activeTool, 
@@ -35,20 +36,23 @@ export default function Header({
               <div className="nav-dropdown-content-inner">
                 <div className="nav-dropdown-group-title">Image Utilities</div>
                 {TOOLS_CATALOG.filter(t => t.category === "Most Used Tools" || t.category === "Basic Editing").map(t => (
-                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
-                    {t.name}
+                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ opacity: 0.75, display: 'inline-flex' }}>{getToolIcon(t, 14)}</span>
+                    <span>{t.name}</span>
                   </div>
                 ))}
                 <div className="nav-dropdown-group-title">Sizes & Formats</div>
                 {TOOLS_CATALOG.filter(t => t.category === "DPI & Quality" || t.category === "Passport & ID Photo Sizes" || t.category === "Format Conversions").map(t => (
-                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
-                    {t.name}
+                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ opacity: 0.75, display: 'inline-flex' }}>{getToolIcon(t, 14)}</span>
+                    <span>{t.name}</span>
                   </div>
                 ))}
                 <div className="nav-dropdown-group-title">PDF & Compression</div>
                 {TOOLS_CATALOG.filter(t => t.category === "Image to PDF" || t.category === "Exact Target Sizes").map(t => (
-                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }}>
-                    {t.name}
+                  <div key={t.id} className="nav-dropdown-item" onClick={(e) => { e.stopPropagation(); setActiveTool(t); setIsToolkitOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ opacity: 0.75, display: 'inline-flex' }}>{getToolIcon(t, 14)}</span>
+                    <span>{t.name}</span>
                   </div>
                 ))}
               </div>

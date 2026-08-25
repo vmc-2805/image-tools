@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { getSeoData, updateMetaTags, fetchAndApplySeo } from './seoData';
 import { TOOLS_CATALOG } from './toolsCatalog';
+import { getToolIcon } from './toolIcons';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import StaticPages from './components/StaticPages';
@@ -194,11 +195,7 @@ export default function App() {
                       onClick={() => setActiveTool(tool)}
                     >
                       <div className="tool-icon-wrapper">
-                        {tool.engine === 'resizer' ? <Crop size={18} /> :
-                         tool.engine === 'compressor' ? <Maximize2 size={18} /> :
-                         tool.engine === 'sig' ? <Palette size={18} /> :
-                         tool.engine === 'converter' ? <FileText size={18} /> :
-                         <Sliders size={18} />}
+                        {getToolIcon(tool, 18)}
                       </div>
                       <h3 className="tool-card-title">{tool.name}</h3>
                       <p className="tool-card-desc">{tool.desc}</p>

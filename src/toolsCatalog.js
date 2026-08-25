@@ -6,27 +6,26 @@ export const TOOLS_CATALOG = [
   { id: 'resize-pixel', name: 'Resize Image Pixel Online', desc: 'Resize image dimensions by width/height pixels with target file size control', category: 'Most Used Tools', engine: 'resize-pixel-engine', params: {} },
   { id: 'gen-sig', name: 'Generate Signature', desc: 'Draw a customized digital signature', category: 'Most Used Tools', engine: 'sig', params: {} },
   { id: 'increase-kb', name: 'Increase Image Size in KB', desc: 'Increase file size by padding metadata or low compression', category: 'Most Used Tools', engine: 'compressor', params: { targetKB: 500, mode: 'increase' } },
-  { id: 'ai-enhancer', name: 'AI Photo Enhancer', desc: 'Pi7 Image Tool - Turn blurry photos into crystal-clear memories', category: 'Most Used Tools', engine: 'increase-quality-engine', params: {} },
+  { id: 'ai-enhancer', name: 'AI Photo Enhancer - Increase Image Quality Online', desc: 'Turn blurry photos into crystal-clear memories', category: 'Most Used Tools', engine: 'increase-quality-engine', params: {} },
   { id: 'remove-blemishes', name: 'Remove Blemishes from Photos with AI', desc: 'Flawless skin in every photo - remove blemishes, pimples, and spots instantly with AI.', category: 'Most Used Tools', engine: 'blemish-remover-engine', params: {} },
   { id: 'ai-retouch', name: 'Retouch Photo Online with AI', desc: 'Smooth skin, clear tones, and HD results - Pi7 makes photo retouch effortless.', category: 'Most Used Tools', engine: 'ai-retouch-engine', params: {} },
-  { id: 'increase-quality', name: 'Increase Image Quality Online Free', desc: 'Pi7 Image Tool - Turn blurry photos into crystal-clear memories', category: 'Most Used Tools', engine: 'increase-quality-engine', params: {} },
   { id: 'resize-sig', name: 'Resize Signature', desc: 'Resize signature to custom standard dimensions', category: 'Most Used Tools', engine: 'resizer', params: { width: 5.0, height: 2.0, unit: 'cm', dpi: 300 } },
   
   // 2. Basic Editing
-  { id: 'blur-bg', name: 'Blur Background', desc: 'Apply blur filter on the background area', category: 'Basic Editing', engine: 'effects', params: { effectType: 'blur-bg' } },
-  { id: 'rotate-img', name: 'Rotate Image', desc: 'Rotate image by 90, 180 or 270 degrees', category: 'Basic Editing', engine: 'effects', params: { effectType: 'rotate', rotation: 90 } },
+  { id: 'blur-bg', name: 'Blur Image Background Online', desc: 'Welcome to Pi7 Image Tool - Make your photos pop with background blur.', category: 'Basic Editing', engine: 'motion-blur-engine', params: { defaultType: 'gaussian', defaultBlurBg: true } },
+  { id: 'rotate-img', name: 'Rotate Image', desc: 'Rotate image by 90, 180 or 270 degrees', category: 'Basic Editing', engine: 'effects', params: { effectType: 'rotate', rotation: 0 } },
   { id: 'flip-img', name: 'Flip Image', desc: 'Flip image vertically or horizontally', category: 'Basic Editing', engine: 'effects', params: { effectType: 'flip', direction: 'horizontal' } },
-  { id: 'watermark', name: 'Watermark Images', desc: 'Add text overlay on image', category: 'Basic Editing', engine: 'effects', params: { effectType: 'watermark', text: 'CONFIDENTIAL' } },
+  { id: 'watermark', name: 'Add Watermark to Image Online', desc: 'Protect your images with custom text or logo watermarks', category: 'Basic Editing', engine: 'watermark-engine', params: { defaultTab: 'text' } },
   { id: 'round-corners', name: 'Round Corners', desc: 'Apply rounded border corners to your image', category: 'Basic Editing', engine: 'effects', params: { effectType: 'round-corners', radius: 40 } },
   { id: 'img-colorpicker', name: 'Image Color Picker', desc: 'Pick any color code from your image', category: 'Basic Editing', engine: 'effects', params: { effectType: 'colorpicker' } },
   
   // 3. Blur, Pixelate and Special Effects
-  { id: 'blur-image', name: 'Blur Image', desc: 'Blur the entire image content', category: 'Blur, Pixelate and Special Effects', engine: 'effects', params: { effectType: 'blur', intensity: 10 } },
+  { id: 'blur-image', name: 'Blur Image', desc: 'Apply Gaussian blur or motion blur to your images', category: 'Blur, Pixelate and Special Effects', engine: 'motion-blur-engine', params: { defaultType: 'gaussian', defaultBlurBg: false } },
   { id: 'pixelate-image', name: 'Pixelate Image', desc: 'Advanced retro image processor & face pixelator', category: 'Blur, Pixelate and Special Effects', engine: 'pixelate-engine', params: {} },
   { id: 'grayscale', name: 'Convert Image to Grayscale', desc: 'Transform Colors, Embrace Elegance: Pi7 Image Tool for Effortless Grayscale Conversion', category: 'Blur, Pixelate and Special Effects', engine: 'grayscale-engine', params: {} },
   { id: 'black-white', name: 'Turn Color Image to Black and White', desc: 'Pi7 Image Tool: Transforming Color Picture to Classic Black & White.', category: 'Blur, Pixelate and Special Effects', engine: 'blackwhite-engine', params: {} },
-  { id: 'deep-fry', name: 'Deep Fry Photo', desc: 'Over-saturate and maximize contrast', category: 'Blur, Pixelate and Special Effects', engine: 'effects', params: { effectType: 'deepfry' } },
-  { id: 'add-text', name: 'Add Text to Image', desc: 'Overlay custom styled text onto image', category: 'Blur, Pixelate and Special Effects', engine: 'effects', params: { effectType: 'add-text', text: 'Type Here', color: '#ff0000', size: 36 } },
+  { id: 'deep-fry', name: 'Deep Fryer Photo - Free Online Image Deep Fry Tool', desc: 'Pick an image. Hit a preset. Download your deep-fried meme. Runs in your browser.', category: 'Blur, Pixelate and Special Effects', engine: 'deep-fry-engine', params: {} },
+  { id: 'add-text', name: 'Add Text to Image Online', desc: 'Overlay custom styled text onto image', category: 'Blur, Pixelate and Special Effects', engine: 'watermark-engine', params: { defaultTab: 'text' } },
   { id: 'add-border', name: 'Add Border to Image', desc: 'Add classic borders, polaroid frames, and more', category: 'Blur, Pixelate and Special Effects', engine: 'add-border-engine', params: {} },
   { id: 'censor-photo', name: 'Censor Photo Online', desc: 'The Easiest Way to Censor Photos Online, Fast and Secure!', category: 'Blur, Pixelate and Special Effects', engine: 'censor-engine', params: {} },
   { id: 'motion-blur', name: 'Motion Blur Image Online', desc: 'Your Reliable Solution to Motion Blur Photos Instantly & Securely!', category: 'Blur, Pixelate and Special Effects', engine: 'motion-blur-engine', params: {} },
@@ -46,7 +45,7 @@ export const TOOLS_CATALOG = [
   { id: 'pancard-resize', name: 'PAN Card Photo Resize', desc: 'Resize photo to PAN Card guidelines (2.5x3.5cm)', category: 'Passport & ID Photo Sizes', engine: 'resizer', params: { width: 2.5, height: 3.5, unit: 'cm', dpi: 300 } },
   
   // 6. Social Media
-  { id: 'whatsapp-dp', name: 'WhatsApp DP Size', desc: 'Resize photo to square WhatsApp DP size (500x500 px)', category: 'Resize For Social Media', engine: 'resizer', params: { width: 500, height: 500, unit: 'px', dpi: 72, fitMode: 'contain' } },
+  { id: 'whatsapp-dp', name: 'Resize Image for WhatsApp DP - No Cropping', desc: 'Welcome to Pi7 Image Tool - Resize Your Photos Perfectly for WhatsApp DP without Cropping!', category: 'Resize For Social Media', engine: 'whatsapp-dp-engine', params: {} },
   
   // 7. Format Conversions
   { id: 'image-to-jpg', name: 'Image to JPG', desc: 'Convert image format to JPEG', category: 'Format Conversions', engine: 'converter', params: { targetFormat: 'jpg' } },
