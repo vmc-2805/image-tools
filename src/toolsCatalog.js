@@ -52,7 +52,7 @@ export const TOOLS_CATALOG = [
   { id: 'png-to-jpeg', name: 'PNG to JPEG', desc: 'Convert PNG images to JPEG format', category: 'Format Conversions', engine: 'converter', params: { targetFormat: 'jpg' } },
   { id: 'jpeg-to-png', name: 'JPEG to PNG', desc: 'Convert JPG images to PNG format', category: 'Format Conversions', engine: 'converter', params: { targetFormat: 'png' } },
   { id: 'webp-to-jpg', name: 'WEBP to JPG', desc: 'Convert WEBP images to JPEG format', category: 'Format Conversions', engine: 'converter', params: { targetFormat: 'jpg' } },
-  { id: 'favicon-gen', name: 'Favicon Generator', desc: 'Generate standard multi-size PNG/ICO favicon', category: 'Format Conversions', engine: 'converter', params: { targetFormat: 'ico' } },
+  { id: 'favicon-gen', name: 'Favicon Generator - Free Multi-Size Pack', desc: 'Drop a logo. Get a multi-size favicon.ico, PNGs, manifest, and HTML snippet. No upload. No signup. No wait.', category: 'Format Conversions', engine: 'favicon-engine', params: {} },
   
   // 8. Image to PDF
   { id: 'image-to-pdf', name: 'Image to PDF', desc: 'Convert multiple images into a single PDF document', category: 'Image to PDF', engine: 'img2pdf-engine', params: {} },

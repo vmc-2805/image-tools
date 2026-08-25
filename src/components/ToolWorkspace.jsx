@@ -39,8 +39,11 @@ import {
   Minus,
   Pipette,
   Flame,
-  MessageCircle
+  MessageCircle,
+  Globe,
+  Copy
 } from 'lucide-react';
+import JSZip from 'jszip';
 import { getSeoData, updateMetaTags, fetchAndApplySeo } from '../seoData';
 import { TOOLS_CATALOG } from '../toolsCatalog';
 
@@ -338,6 +341,14 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
   const [waPadding, setWaPadding] = useState(0);
   const [waShowEditModal, setWaShowEditModal] = useState(false);
   const waInputRef = useRef(null);
+  // Engine FAV: Favicon Generator States
+  const [favImage, setFavImage] = useState(null);
+  const [favFileName, setFavFileName] = useState('');
+  const [favSourceDim, setFavSourceDim] = useState({ width: 0, height: 0 });
+  const [favSizes, setFavSizes] = useState([16, 32, 48, 64, 128, 180, 256]);
+  const [favPreviews, setFavPreviews] = useState({});
+  const [favCropMode, setFavCropMode] = useState('center-square'); // 'center-square' | 'contain'
+  const favInputRef = useRef(null);
   // Engine DPI: DPI Converter & Resizer Suite States
   const [dpiFiles, setDpiFiles] = useState([]);
   const [dpiUnit, setDpiUnit] = useState('px'); // 'px' | 'mm' | 'cm'
@@ -649,6 +660,11 @@ export default function ToolWorkspace({ activeTool, setActiveTool, theme }) {
     setWaBlurAmount(15);
     setWaPadding(0);
     setWaShowEditModal(false);
+
+    // 24. Favicon states
+    setFavImage(null);
+    setFavPreviews({});
+    setFavSizes([16, 32, 48, 64, 128, 180, 256]);
 
     if (!activeTool) return;
     
@@ -3752,6 +3768,195 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         setProcessing(false);
       }
     }, 60);
+  };
+
+  // ENGINE FAV: Favicon Generator Handlers
+  const buildIcoBlob = async (selectedSizes, previews) => {
+    const pngBuffers = [];
+    for (const s of selectedSizes) {
+      const dataUrl = previews[s];
+      if (dataUrl) {
+        const res = await fetch(dataUrl);
+        const arrayBuffer = await res.arrayBuffer();
+        pngBuffers.push({ size: s, buffer: new Uint8Array(arrayBuffer) });
+      }
+    }
+
+    const count = pngBuffers.length;
+    if (count === 0) return null;
+
+    const headerSize = 6 + count * 16;
+    let totalSize = headerSize;
+    for (const item of pngBuffers) {
+      totalSize += item.buffer.length;
+    }
+
+    const icoBuffer = new Uint8Array(totalSize);
+    const view = new DataView(icoBuffer.buffer);
+
+    view.setUint16(0, 0, true);
+    view.setUint16(2, 1, true);
+    view.setUint16(4, count, true);
+
+    let offset = headerSize;
+    for (let i = 0; i < count; i++) {
+      const item = pngBuffers[i];
+      const s = item.size;
+      const dirOffset = 6 + i * 16;
+
+      view.setUint8(dirOffset, s >= 256 ? 0 : s);
+      view.setUint8(dirOffset + 1, s >= 256 ? 0 : s);
+      view.setUint8(dirOffset + 2, 0);
+      view.setUint8(dirOffset + 3, 0);
+      view.setUint16(dirOffset + 4, 1, true);
+      view.setUint16(dirOffset + 6, 32, true);
+      view.setUint32(dirOffset + 8, item.buffer.length, true);
+      view.setUint32(dirOffset + 12, offset, true);
+
+      icoBuffer.set(item.buffer, offset);
+      offset += item.buffer.length;
+    }
+
+    return new Blob([icoBuffer], { type: 'image/x-icon' });
+  };
+
+  const renderFaviconSizes = async (imgUrl, cropMode = favCropMode) => {
+    try {
+      const img = await loadImageElement(imgUrl);
+      const nw = img.naturalWidth || img.width;
+      const nh = img.naturalHeight || img.height;
+      setFavSourceDim({ width: nw, height: nh });
+
+      const allPossibleSizes = [16, 20, 24, 32, 40, 48, 64, 96, 128, 180, 256];
+      const previews = {};
+
+      const minSide = Math.min(nw, nh);
+      const sx = (nw - minSide) / 2;
+      const sy = (nh - minSide) / 2;
+
+      for (const s of allPossibleSizes) {
+        const canvas = document.createElement('canvas');
+        canvas.width = s;
+        canvas.height = s;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        if (cropMode === 'center-square') {
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, s, s);
+        } else {
+          const scale = Math.min(s / nw, s / nh);
+          const dw = nw * scale;
+          const dh = nh * scale;
+          const dx = (s - dw) / 2;
+          const dy = (s - dh) / 2;
+          ctx.drawImage(img, dx, dy, dw, dh);
+        }
+
+        previews[s] = canvas.toDataURL('image/png');
+      }
+
+      setFavPreviews(previews);
+    } catch (err) {
+      console.error("Favicon render error:", err);
+    }
+  };
+
+  const handleFavFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const url = URL.createObjectURL(file);
+      setFavImage(url);
+      setFavFileName(file.name);
+      renderFaviconSizes(url, favCropMode);
+    }
+    if (e.target) e.target.value = '';
+  };
+
+  const toggleFavSize = (sz) => {
+    setFavSizes((prev) => 
+      prev.includes(sz) ? prev.filter(x => x !== sz) : [...prev, sz].sort((a, b) => a - b)
+    );
+  };
+
+  const handleFavDownloadIco = async () => {
+    if (favSizes.length === 0) {
+      showToast('Please select at least one size for .ico', 'error');
+      return;
+    }
+    setProcessing(true);
+    setProcessingText('Generating multi-size favicon.ico...');
+
+    try {
+      const icoBlob = await buildIcoBlob(favSizes, favPreviews);
+      if (icoBlob) {
+        const url = URL.createObjectURL(icoBlob);
+        downloadDataUrl(url, 'favicon.ico');
+        showToast('favicon.ico downloaded successfully!');
+      }
+    } catch (err) {
+      console.error("Favicon download error:", err);
+      showToast('Error downloading favicon.ico', 'error');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleFavDownloadPack = async () => {
+    if (!favImage) return;
+    setProcessing(true);
+    setProcessingText('Creating Favicon ZIP pack...');
+
+    try {
+      const zip = new JSZip();
+
+      // 1. favicon.ico
+      const icoBlob = await buildIcoBlob(favSizes, favPreviews);
+      if (icoBlob) {
+        zip.file('favicon.ico', icoBlob);
+      }
+
+      // 2. Individual PNGs
+      for (const s of favSizes) {
+        if (favPreviews[s]) {
+          const base64Data = favPreviews[s].split(',')[1];
+          zip.file(`favicon-${s}x${s}.png`, base64Data, { base64: true });
+        }
+      }
+
+      // 3. Apple Touch Icon (180x180)
+      if (favPreviews[180]) {
+        zip.file('apple-touch-icon.png', favPreviews[180].split(',')[1], { base64: true });
+      }
+
+      // 4. site.webmanifest
+      const manifest = {
+        name: "My App",
+        short_name: "App",
+        icons: [
+          { src: "/favicon-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "/favicon-512x512.png", sizes: "512x512", type: "image/png" }
+        ],
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
+        display: "standalone"
+      };
+      zip.file('site.webmanifest', JSON.stringify(manifest, null, 2));
+
+      // 5. HTML snippet
+      const htmlSnippet = `<!-- Favicon HTML Snippet: Paste in your <head> -->\n<link rel="icon" type="image/x-icon" sizes="${favSizes.map(s => `${s}x${s}`).join(' ')}" href="/favicon.ico">\n${favSizes.map(s => `<link rel="icon" type="image/png" sizes="${s}x${s}" href="/favicon-${s}x${s}.png">`).join('\n')}\n<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n<link rel="manifest" href="/site.webmanifest">\n`;
+      zip.file('html-head-snippet.txt', htmlSnippet);
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      const zipUrl = URL.createObjectURL(content);
+      downloadDataUrl(zipUrl, 'favicon_package.zip');
+      showToast('Favicon Full Pack (ZIP) downloaded!');
+    } catch (err) {
+      console.error("Favicon zip pack error:", err);
+      showToast('Error creating favicon package', 'error');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   // ENGINE RT: Retouch Photo Online with AI Handlers
@@ -8641,6 +8846,241 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
                   <Download size={15} />
                   <span>Download</span>
                 </button>
+              </div>
+
+            </div>
+          )}
+        </div>
+      ) : activeTool.engine === 'favicon-engine' ? (
+        // FAVICON GENERATOR - FREE MULTI-SIZE PACK CUSTOM UI
+        <div className="workspace-container" style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 20px 60px' }}>
+          <div className="back-link" onClick={() => setActiveTool(null)} style={{ marginBottom: '16px' }}>
+            <ArrowLeft size={16} />
+            <span>Back to Dashboard</span>
+          </div>
+
+          <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <h1 className="workspace-title">{activeTool.name || 'Favicon Generator - Free Multi-Size Pack'}</h1>
+            <p className="workspace-desc">{activeTool.desc || 'Drop a logo. Get a multi-size favicon.ico, PNGs, manifest, and HTML snippet. No upload. No signup. No wait.'}</p>
+          </div>
+
+          <input type="file" ref={favInputRef} onChange={handleFavFileChange} accept="image/*" style={{ display: 'none' }} />
+
+          {!favImage ? (
+            <div 
+              className="dropzone"
+              onClick={() => favInputRef.current.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleFavFileChange({ target: { files: e.dataTransfer.files } });
+                }
+              }}
+              style={{ padding: '60px 24px', cursor: 'pointer', textAlign: 'center' }}
+            >
+              <Globe size={48} className="text-primary" style={{ marginBottom: '16px', color: '#2563eb' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                Drop or click to upload your website logo / image
+              </h3>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                Generates multi-layer favicon.ico, iOS / Android PNG icons, manifest & HTML tags in your browser
+              </p>
+              <button type="button" className="btn btn-primary" onClick={(e) => { e.stopPropagation(); favInputRef.current.click(); }}>
+                <Upload size={16} />
+                <span>Select Logo</span>
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+              
+              {/* Left Column: Live Preview & HTML Snippet */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {/* Live Preview Card */}
+                <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+                    LIVE PREVIEW
+                  </span>
+
+                  {/* Horizontal row of icons sorted by size */}
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: '14px', overflowX: 'auto', padding: '20px 10px', backgroundColor: 'var(--bg-btn)', borderRadius: '12px', minHeight: '130px' }}>
+                    {[16, 32, 48, 64, 128, 180, 256].map(sz => {
+                      if (!favSizes.includes(sz) && !favPreviews[sz]) return null;
+                      const displayW = Math.min(80, Math.max(24, sz * 0.35));
+                      return (
+                        <div key={sz} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                          <div style={{ width: `${displayW}px`, height: `${displayW}px`, borderRadius: '6px', overflow: 'hidden', backgroundColor: '#ffffff', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={favPreviews[sz] || favImage} alt={`favicon ${sz}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '500' }}>{sz}x{sz}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Size Info Badge bar */}
+                  <div style={{ padding: '10px 16px', backgroundColor: 'rgba(37, 99, 235, 0.08)', borderRadius: '8px', border: '1px solid rgba(37, 99, 235, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '13px' }}>
+                    <span style={{ color: 'var(--text-primary)' }}>
+                      <strong>favicon.ico size:</strong> ~{((favSizes.length * 28) + 12).toFixed(1)} KB
+                    </span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>
+                      <strong>Sizes inside:</strong> {favSizes.map(s => `${s}x${s}`).join(', ')}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Paste in your <head> Snippet Card */}
+                <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
+                      PASTE IN YOUR &lt;HEAD&gt;
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const snippet = `<link rel="icon" type="image/x-icon" sizes="${favSizes.map(s => `${s}x${s}`).join(' ')}" href="/favicon.ico">\n${favSizes.map(s => `<link rel="icon" type="image/png" sizes="${s}x${s}" href="/favicon-${s}x${s}.png">`).join('\n')}\n<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n<link rel="manifest" href="/site.webmanifest">`;
+                        navigator.clipboard.writeText(snippet);
+                        showToast('HTML snippet copied to clipboard!');
+                      }}
+                      className="btn btn-secondary"
+                      style={{ padding: '4px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <Copy size={13} />
+                      <span>Copy</span>
+                    </button>
+                  </div>
+
+                  <pre style={{ margin: 0, padding: '16px', backgroundColor: 'var(--bg-btn)', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '12px', color: 'var(--text-primary)', overflowX: 'auto', fontFamily: 'monospace', lineHeight: 1.6 }}>
+                    {`<link rel="icon" type="image/x-icon" sizes="${favSizes.map(s => `${s}x${s}`).join(' ')}" href="/favicon.ico">\n` +
+                     favSizes.map(s => `<link rel="icon" type="image/png" sizes="${s}x${s}" href="/favicon-${s}x${s}.png">`).join('\n') +
+                     `\n<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n` +
+                     `<link rel="manifest" href="/site.webmanifest">`}
+                  </pre>
+                </div>
+
+              </div>
+
+              {/* Right Column: Size Selection, Crop & Actions */}
+              <div style={{ backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--glass-backdrop)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
+                
+                {/* SIZES IN THE .ICO */}
+                <div>
+                  <span style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>
+                    SIZES IN THE .ICO
+                  </span>
+
+                  {/* Checkbox Pills Matrix */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px' }}>
+                    {[16, 20, 24, 32, 40, 48, 64, 96, 128, 180, 256].map(sz => {
+                      const isChecked = favSizes.includes(sz);
+                      return (
+                        <label 
+                          key={sz} 
+                          style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            gap: '5px', 
+                            padding: '6px 4px', 
+                            borderRadius: '6px', 
+                            border: isChecked ? '1.5px solid #2563eb' : '1px solid var(--border-color)', 
+                            backgroundColor: isChecked ? 'rgba(37, 99, 235, 0.1)' : 'var(--bg-btn)', 
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: isChecked ? '600' : '400',
+                            color: isChecked ? '#2563eb' : 'var(--text-primary)'
+                          }}
+                        >
+                          <input 
+                            type="checkbox" 
+                            checked={isChecked} 
+                            onChange={() => toggleFavSize(sz)} 
+                            style={{ accentColor: '#2563eb', width: '13px', height: '13px' }} 
+                          />
+                          <span>{sz}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  {/* Quick Select Buttons */}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      type="button"
+                      onClick={() => setFavSizes([16, 32, 48, 64, 128, 180, 256])}
+                      className="btn btn-secondary"
+                      style={{ flex: 1, padding: '6px', fontSize: '11px' }}
+                    >
+                      Recommended
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setFavSizes([16, 20, 24, 32, 40, 48, 64, 96, 128, 180, 256])}
+                      className="btn btn-secondary"
+                      style={{ flex: 1, padding: '6px', fontSize: '11px' }}
+                    >
+                      All
+                    </button>
+                  </div>
+                </div>
+
+                {/* CROP */}
+                <div style={{ paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                    CROP
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextMode = favCropMode === 'center-square' ? 'contain' : 'center-square';
+                      setFavCropMode(nextMode);
+                      renderFaviconSizes(favImage, nextMode);
+                    }}
+                    className="btn btn-secondary"
+                    style={{ width: '100%', padding: '9px', fontSize: '13px', marginBottom: '8px' }}
+                  >
+                    <span>{favCropMode === 'center-square' ? 'Switch to Contain (Fit All)' : 'Switch to Center Square Crop'}</span>
+                  </button>
+
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block', textAlign: 'center' }}>
+                    Source: {favSourceDim.width} x {favSourceDim.height} ({favCropMode === 'center-square' ? 'Center square cropped' : 'Contained fit'})
+                  </span>
+                </div>
+
+                {/* ACTIONS */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
+                  <button
+                    type="button"
+                    onClick={handleFavDownloadIco}
+                    className="btn btn-primary"
+                    style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: '600', backgroundColor: '#3b82f6', borderColor: '#3b82f6' }}
+                  >
+                    <span>Download favicon.ico</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleFavDownloadPack}
+                    style={{ width: '100%', padding: '10px', fontSize: '13px', fontWeight: '600', backgroundColor: 'transparent', border: '1px solid #3b82f6', color: '#3b82f6', borderRadius: '8px', cursor: 'pointer' }}
+                  >
+                    <span>Download Full Pack (ZIP)</span>
+                  </button>
+
+                  <div style={{ textAlign: 'center', marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      onClick={() => favInputRef.current.click()}
+                      style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', textDecoration: 'none', padding: '4px' }}
+                      onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
+                      onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+                    >
+                      Upload a different image
+                    </button>
+                  </div>
+                </div>
+
               </div>
 
             </div>

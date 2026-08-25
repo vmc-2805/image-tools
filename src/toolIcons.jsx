@@ -142,6 +142,7 @@ export function getToolIcon(tool, size = 18) {
   if (tool.engine === 'add-border-engine') return <Frame size={size} />;
   if (tool.engine === 'deep-fry-engine') return <Flame size={size} />;
   if (tool.engine === 'whatsapp-dp-engine') return <MessageCircle size={size} />;
+  if (tool.engine === 'favicon-engine') return <Globe size={size} />;
 
   return <SlidersHorizontal size={size} />;
 }
