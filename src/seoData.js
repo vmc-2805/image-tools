@@ -4,12 +4,12 @@
  */
 
 export const DEFAULT_SEO = {
-  title: "AeroTools - Premium Free Online Image & PDF Utilities",
-  description: "AeroTools runs 100% locally in your browser. Compress, resize, crop, watermark, convert image and PDF files instantly and securely without server uploads.",
+  title: "Imgediit - Premium Free Online Image & PDF Utilities",
+  description: "Imgediit runs 100% locally in your browser. Compress, resize, crop, watermark, convert image and PDF files instantly and securely without server uploads.",
   robots: "index, follow",
   ogType: "website",
   ogImage: "/favicon.svg",
-  canonicalBase: "https://aerotools.online"
+  canonicalBase: "https://imgediit.com"
 };
 
 // Handcrafted, SEO-optimized overrides for key pages.
@@ -17,7 +17,7 @@ export const DEFAULT_SEO = {
 // Descriptions must be max 165 characters.
 export const SEO_OVERRIDES = {
   "home": {
-    title: "AeroTools - Free In-Browser Image & PDF Utilities",
+    title: "Imgediit - Free In-Browser Image & PDF Utilities",
     description: "Free, secure client-side tools running 100% locally in your browser. Crop, compress, convert, and resize images and PDFs without server uploads.",
     robots: "index, follow",
     breadcrumbs: [
@@ -26,13 +26,13 @@ export const SEO_OVERRIDES = {
     schema: {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "AeroTools",
-      "url": "https://aerotools.online/",
+      "name": "Imgediit",
+      "url": "https://imgediit.com/",
       "description": "Free, secure client-side tools running 100% locally in your browser."
     }
   },
   "passport-maker": {
-    title: "Passport Photo Maker Online Free - AeroTools",
+    title: "Passport Photo Maker Online Free - Imgediit",
     description: "Create standard passport-sized photos with custom background colors and alignment rules instantly. Perfect for online applications.",
     breadcrumbs: [
       { name: "Home", path: "/" },
@@ -41,7 +41,7 @@ export const SEO_OVERRIDES = {
     ]
   },
   "reduce-kb": {
-    title: "Reduce Image Size in KB Online - Compress - AeroTools",
+    title: "Reduce Image Size in KB Online - Compress - Imgediit",
     description: "Reduce image file size to a target KB limit (50KB, 100KB, etc.) without losing quality. Completely client-side and secure.",
     breadcrumbs: [
       { name: "Home", path: "/" },
@@ -50,7 +50,7 @@ export const SEO_OVERRIDES = {
     ]
   },
   "resize-pixel": {
-    title: "Resize Image Pixel Online - AeroTools",
+    title: "Resize Image Pixel Online - Imgediit",
     description: "Resize image dimensions by width and height pixels with target size controls. Safe, private, and runs 100% in your browser.",
     breadcrumbs: [
       { name: "Home", path: "/" },
@@ -59,7 +59,7 @@ export const SEO_OVERRIDES = {
     ]
   },
   "convert-dpi": {
-    title: "DPI Converter - Change Image DPI Online - AeroTools",
+    title: "DPI Converter - Change Image DPI Online - Imgediit",
     description: "Change image DPI to 200, 300, 600 or custom DPI instantly. Perfect for preparing documents and photos for printing and submissions.",
     breadcrumbs: [
       { name: "Home", path: "/" },
@@ -68,7 +68,7 @@ export const SEO_OVERRIDES = {
     ]
   },
   "image-to-pdf": {
-    title: "Convert Image to PDF Online - AeroTools",
+    title: "Convert Image to PDF Online - Imgediit",
     description: "Convert JPG, PNG, WEBP, and other images to a single PDF document. Adjust layout, margins, and compression in your browser securely.",
     breadcrumbs: [
       { name: "Home", path: "/" },
@@ -76,36 +76,44 @@ export const SEO_OVERRIDES = {
       { name: "Image to PDF Converter", path: "/image-to-pdf" }
     ]
   },
-  "about-us": {
-    title: "About Us - Local Browser Utilities - AeroTools",
-    description: "Learn about the client-side local architecture of AeroTools, our compliance safeguards, and how our utilities process data inside your browser sandbox.",
-    breadcrumbs: [
-      { name: "Home", path: "/" },
-      { name: "About Us", path: "/about-us" }
-    ]
-  },
   "privacy-policy": {
-    title: "Privacy Policy - 100% Client-Side Protection - AeroTools",
-    description: "AeroTools privacy safeguards. All operations run entirely in your local browser sandbox. We do not collect, store, or transmit your files.",
+    title: "Privacy Policy - 100% Client-Side Protection - Imgediit",
+    description: "Imgediit privacy safeguards. All operations run entirely in your local browser sandbox. We do not collect, store, or transmit your files.",
     breadcrumbs: [
       { name: "Home", path: "/" },
       { name: "Privacy Policy", path: "/privacy-policy" }
     ]
   },
   "terms-of-service": {
-    title: "Terms of Service - Local Usage Guidelines - AeroTools",
-    description: "Read the usage license, commercial disclaimer, and terms of service for using the AeroTools browser-local utilities portal.",
+    title: "Terms of Service - Local Usage Guidelines - Imgediit",
+    description: "Read the usage license, commercial disclaimer, and terms of service for using the Imgediit browser-local utilities portal.",
     breadcrumbs: [
       { name: "Home", path: "/" },
       { name: "Terms of Service", path: "/terms-of-service" }
     ]
   },
-  "contact-support": {
-    title: "Contact Support - Tech Queries - AeroTools",
-    description: "Get in touch with the AeroTools support team for document formatting, file compression, and technical query resolutions.",
+  "ai-enhancement-guide": {
+    title: "AI Photo Enhancer & Skin Retouching Guide - Imgediit",
+    description: "Learn how to upscale blurry photos to 4K, remove blemishes, and smooth portraits with in-browser AI tools 100% privately.",
     breadcrumbs: [
       { name: "Home", path: "/" },
-      { name: "Contact Support", path: "/contact-support" }
+      { name: "AI Enhancement Guide", path: "/ai-enhancement-guide" }
+    ]
+  },
+  "passport-photo-guide": {
+    title: "Official Passport & Visa Photo Guidelines - Imgediit",
+    description: "Standard passport photo dimensions (3.5x4.5cm, 2x2 in), background colors, and online application specs for Indian, US, UK, and Schengen visas.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Passport Photo Guide", path: "/passport-photo-guide" }
+    ]
+  },
+  "pdf-compressor-guide": {
+    title: "Smart PDF Merge & Target KB Compressor Guide - Imgediit",
+    description: "Step-by-step guide to converting images to PDF, PDF to JPG, and compressing files under 20KB, 50KB, 100KB limits with 100% privacy.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "PDF Compressor Guide", path: "/pdf-compressor-guide" }
     ]
   }
 };
@@ -139,8 +147,8 @@ export function getSeoData(tool) {
   // 1. Resolve Title (Max 65 characters)
   let title = override?.title;
   if (!title) {
-    const rawTitle = `${tool.name} Online Free - AeroTools`;
-    title = rawTitle.length <= 65 ? rawTitle : `${tool.name} - AeroTools`;
+    const rawTitle = `${tool.name} Online Free - Imgediit`;
+    title = rawTitle.length <= 65 ? rawTitle : `${tool.name} - Imgediit`;
     if (title.length > 65) {
       title = title.substring(0, 62) + "...";
     }

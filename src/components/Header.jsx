@@ -16,9 +16,9 @@ export default function Header({
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div className="logo-section" onClick={() => setActiveTool(null)} style={{ cursor: 'pointer' }}>
           <div className="logo-icon">
-            <Layers size={20} />
+            <img src="/Logoicon.png" alt="Imgediit Logo" className="logo-img" />
           </div>
-          <span className="logo-text">AeroTools</span>
+          <span className="logo-text">Imgediit</span>
         </div>
 
         {/* Navigation Menus */}
@@ -59,15 +59,6 @@ export default function Header({
             </div>
           </div>
 
-          {/* About Link */}
-          <span className="nav-link" onClick={() => setActiveTool({ id: 'about-us', name: 'About Us', engine: 'page', category: 'Information' })}>
-            About Us
-          </span>
-
-          {/* Contact Link */}
-          <span className="nav-link" onClick={() => setActiveTool({ id: 'contact-support', name: 'Contact Support', engine: 'page', category: 'Information' })}>
-            Contact
-          </span>
         </nav>
       </div>
       

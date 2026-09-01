@@ -4,14 +4,14 @@ export default function TermsOfService() {
   return (
     <>
       <p style={{ marginBottom: '20px', fontSize: '16px', lineHeight: '1.7', color: 'var(--text-primary)' }}>
-        Welcome to AeroTools. By accessing our static portal and utilizing our client-side utilities, you agree to comply with the legal parameters outlined below. 
+        Welcome to Imgediit. By accessing our static portal and utilizing our client-side utilities, you agree to comply with the legal parameters outlined below. 
       </p>
 
       <h3 style={{ fontSize: '20px', fontWeight: '700', margin: '28px 0 14px', color: 'var(--text-primary)' }}>
         1. License & Usage Permissions
       </h3>
       <p style={{ marginBottom: '12px' }}>
-        We grant you a free, perpetual, non-exclusive license to use the AeroTools portal for any legal purpose. This includes:
+        We grant you a free, perpetual, non-exclusive license to use the Imgediit portal for any legal purpose. This includes:
       </p>
       <ul style={{ paddingLeft: '20px', marginBottom: '16px', listStyleType: 'circle' }}>
         <li style={{ marginBottom: '8px' }}><strong>Commercial Workloads:</strong> Designing materials, preparing corporate PDFs, resizing client forms, and signing contracts for business operations.</li>
@@ -23,7 +23,7 @@ export default function TermsOfService() {
         2. Client-Side Compute Boundaries
       </h3>
       <p style={{ marginBottom: '16px' }}>
-        AeroTools performs tasks using your local device resources (RAM, CPU cycles, and GPU calculations). 
+        Imgediit performs tasks using your local device resources (RAM, CPU cycles, and GPU calculations). 
         Consequently, performance outputs (processing speed, memory capacities, and conversion limits) are subject to your browser specifications and hardware boundaries.
       </p>
       <p style={{ marginBottom: '16px' }}>
@@ -44,10 +44,10 @@ export default function TermsOfService() {
         4. Disclaimer of Warranties & Limitation of Liability
       </h3>
       <p style={{ marginBottom: '16px', fontStyle: 'italic' }}>
-        AeroTools is provided "as is" and "as available," without warranties of any kind, whether express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
+        Imgediit is provided "as is" and "as available," without warranties of any kind, whether express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
       </p>
       <p style={{ marginBottom: '16px' }}>
-        In no event shall AeroTools, its developers, or its static hosting providers be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, loss of data, loss of business profits, or system crashes) arising in any way out of the use of this software, even if advised of the possibility of such damage.
+        In no event shall Imgediit, its developers, or its static hosting providers be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, loss of data, loss of business profits, or system crashes) arising in any way out of the use of this software, even if advised of the possibility of such damage.
       </p>
     </>
   );

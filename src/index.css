@@ -1,22 +1,29 @@
-/* AeroTools Portal Style System */
+/* Imgediit Portal Style System - Brand Palette Harmonized with Logoicon */
 
 :root {
-  --bg-app: #08090c;
-  --bg-card: rgba(17, 19, 26, 0.7);
-  --bg-card-hover: rgba(26, 29, 40, 0.9);
-  --border-color: rgba(255, 255, 255, 0.05);
-  --border-color-hover: rgba(255, 255, 255, 0.12);
+  --bg-app: #070913;
+  --bg-card: rgba(15, 18, 30, 0.75);
+  --bg-card-hover: rgba(24, 28, 48, 0.9);
+  --border-color: rgba(139, 92, 246, 0.12);
+  --border-color-hover: rgba(139, 92, 246, 0.35);
   --bg-input: rgba(255, 255, 255, 0.03);
   --bg-btn: rgba(255, 255, 255, 0.04);
-  --bg-btn-hover: rgba(255, 255, 255, 0.08);
-  --bg-navbar: rgba(8, 9, 12, 0.85);
+  --bg-btn-hover: rgba(139, 92, 246, 0.12);
+  --bg-navbar: rgba(7, 9, 19, 0.88);
   
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-glow: rgba(79, 70, 229, 0.25);
+  /* Brand Colors matching Logoicon.png */
+  --brand-blue: #3b58f6;
+  --brand-purple: #6344f5;
+  --brand-magenta: #9333ea;
+  --brand-accent: #a855f7;
+  --brand-gradient: linear-gradient(135deg, #3b58f6 0%, #6344f5 50%, #9333ea 100%);
   
-  --accent: #8b5cf6;
-  --accent-glow: rgba(139, 92, 246, 0.2);
+  --primary: #6344f5;
+  --primary-hover: #5234e8;
+  --primary-glow: rgba(99, 68, 245, 0.35);
+  
+  --accent: #9333ea;
+  --accent-glow: rgba(147, 51, 234, 0.25);
   
   --text-primary: #f3f4f6;
   --text-secondary: #9ca3af;
@@ -29,37 +36,37 @@
   --sans-font: 'Inter', system-ui, sans-serif;
   --display-font: 'Outfit', var(--sans-font);
   
-  --glass-backdrop: blur(12px);
+  --glass-backdrop: blur(14px);
 }
 
 .light-theme {
-  --bg-app: #f1f5f9;
-  --bg-card: rgba(255, 255, 255, 0.8);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
-  --border-color: rgba(15, 23, 42, 0.08);
-  --border-color-hover: rgba(15, 23, 42, 0.15);
+  --bg-app: #f5f7fc;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-color: rgba(99, 68, 245, 0.1);
+  --border-color-hover: rgba(99, 68, 245, 0.28);
   --bg-input: rgba(15, 23, 42, 0.03);
   --bg-btn: rgba(15, 23, 42, 0.04);
-  --bg-btn-hover: rgba(15, 23, 42, 0.07);
-  --bg-navbar: rgba(255, 255, 255, 0.85);
+  --bg-btn-hover: rgba(99, 68, 245, 0.08);
+  --bg-navbar: rgba(255, 255, 255, 0.88);
   
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
   
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-glow: rgba(79, 70, 229, 0.15);
+  --primary: #6344f5;
+  --primary-hover: #5234e8;
+  --primary-glow: rgba(99, 68, 245, 0.2);
 }
 
 .light-theme .logo-text {
-  background: linear-gradient(to right, #0f172a, #4f46e5);
+  background: linear-gradient(135deg, #0f172a 0%, #3b58f6 50%, #6344f5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .light-theme .dashboard-title {
-  background: linear-gradient(135deg, #0f172a, #2563eb, #4f46e5);
+  background: linear-gradient(135deg, #0f172a 0%, #3b58f6 40%, #6344f5 70%, #9333ea 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -77,7 +84,7 @@ body {
   font-family: var(--sans-font);
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(139, 92, 246, 0.04) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -96,11 +103,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(139, 92, 246, 0.2);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(139, 92, 246, 0.4);
 }
 
 /* Layout Containers */
@@ -130,25 +137,35 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  user-select: none;
 }
 
 .logo-icon {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
   width: 36px;
   height: 36px;
-  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-section:hover .logo-icon {
+  transform: scale(1.08) rotate(-2deg);
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(99, 68, 245, 0.4));
 }
 
 .logo-text {
   font-family: var(--display-font);
-  font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(to right, #ffffff, #c7d2fe);
+  font-size: 21px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 40%, #c4b5fd 75%, #a855f7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
@@ -170,7 +187,7 @@ body {
   font-size: 38px;
   font-weight: 800;
   letter-spacing: -1px;
-  background: linear-gradient(135deg, #ffffff, #93c5fd, #c7d2fe);
+  background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 35%, #a5b4fc 65%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

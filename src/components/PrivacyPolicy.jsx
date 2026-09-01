@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <>
       <p style={{ marginBottom: '20px', fontSize: '16px', lineHeight: '1.7', color: 'var(--text-primary)' }}>
-        AeroTools is designed around a fundamental security principle: <strong>what never leaves your device can never be leaked.</strong> 
+        Imgediit is designed around a fundamental security principle: <strong>what never leaves your device can never be leaked.</strong> 
         Because our suite of document and image utilities executes 100% locally inside your web browser sandbox, we have zero visibility into your files.
       </p>
 
@@ -58,12 +58,12 @@ export default function PrivacyPolicy() {
         Compliance Auditing (GDPR, HIPAA, and SOC 2 Readiness)
       </h3>
       <p style={{ marginBottom: '16px' }}>
-        For corporate clients, data privacy regulations place heavy compliance burdens when third-party servers process PII (Personally Identifiable Information). AeroTools simplifies this framework completely:
+        For corporate clients, data privacy regulations place heavy compliance burdens when third-party servers process PII (Personally Identifiable Information). Imgediit simplifies this framework completely:
       </p>
       
       <ul style={{ paddingLeft: '20px', marginBottom: '24px', listStyleType: 'disc' }}>
         <li style={{ marginBottom: '12px' }}>
-          <strong>GDPR Compliant by Architecture:</strong> Because no file transit takes place, AeroTools is not a "Data Processor" or "Data Controller" under the General Data Protection Regulation. There are no sub-processors to audit, and no risk of cross-border data leakage.
+          <strong>GDPR Compliant by Architecture:</strong> Because no file transit takes place, Imgediit is not a "Data Processor" or "Data Controller" under the General Data Protection Regulation. There are no sub-processors to audit, and no risk of cross-border data leakage.
         </li>
         <li style={{ marginBottom: '12px' }}>
           <strong>HIPAA Medical Record Isolation:</strong> Healthcare companies can compress medical document scans, crop ID photos, and merge PDFs without signing a Business Associate Agreement (BAA) because patient files never enter a external network.
@@ -77,7 +77,7 @@ export default function PrivacyPolicy() {
         Security Sandbox Boundaries
       </h3>
       <p style={{ marginBottom: '16px' }}>
-        AeroTools executes scripts inside your browser's default sandbox structure. This prevents scripts from accessing your machine's system files or network assets without explicit user drag-and-drop triggers. You can physically disconnect your internet connection (offline mode) and continue to crop, compress, scale, or sign files, which verifies that the logic stays on your device.
+        Imgediit executes scripts inside your browser's default sandbox structure. This prevents scripts from accessing your machine's system files or network assets without explicit user drag-and-drop triggers. You can physically disconnect your internet connection (offline mode) and continue to crop, compress, scale, or sign files, which verifies that the logic stays on your device.
       </p>
     </>
   );

@@ -8,11 +8,11 @@ export const TOOLS_CATALOG = [
   { id: 'increase-kb', name: 'Increase Image Size in KB', desc: 'Increase file size by padding metadata or low compression', category: 'Most Used Tools', engine: 'compressor', params: { targetKB: 500, mode: 'increase' } },
   { id: 'ai-enhancer', name: 'AI Photo Enhancer - Increase Image Quality Online', desc: 'Turn blurry photos into crystal-clear memories', category: 'Most Used Tools', engine: 'increase-quality-engine', params: {} },
   { id: 'remove-blemishes', name: 'Remove Blemishes from Photos with AI', desc: 'Flawless skin in every photo - remove blemishes, pimples, and spots instantly with AI.', category: 'Most Used Tools', engine: 'blemish-remover-engine', params: {} },
-  { id: 'ai-retouch', name: 'Retouch Photo Online with AI', desc: 'Smooth skin, clear tones, and HD results - Pi7 makes photo retouch effortless.', category: 'Most Used Tools', engine: 'ai-retouch-engine', params: {} },
+  { id: 'ai-retouch', name: 'Retouch Photo Online with AI', desc: 'Smooth skin, clear tones, and HD results - make photo retouch effortless.', category: 'Most Used Tools', engine: 'ai-retouch-engine', params: {} },
   { id: 'resize-sig', name: 'Resize Signature', desc: 'Resize signature to custom standard dimensions', category: 'Most Used Tools', engine: 'resizer', params: { width: 5.0, height: 2.0, unit: 'cm', dpi: 300 } },
   
   // 2. Basic Editing
-  { id: 'blur-bg', name: 'Blur Image Background Online', desc: 'Welcome to Pi7 Image Tool - Make your photos pop with background blur.', category: 'Basic Editing', engine: 'motion-blur-engine', params: { defaultType: 'gaussian', defaultBlurBg: true } },
+  { id: 'blur-bg', name: 'Blur Image Background Online', desc: 'Make your photos pop with background blur.', category: 'Basic Editing', engine: 'motion-blur-engine', params: { defaultType: 'gaussian', defaultBlurBg: true } },
   { id: 'rotate-img', name: 'Rotate Image', desc: 'Rotate image by 90, 180 or 270 degrees', category: 'Basic Editing', engine: 'effects', params: { effectType: 'rotate', rotation: 0 } },
   { id: 'flip-img', name: 'Flip Image', desc: 'Flip image vertically or horizontally', category: 'Basic Editing', engine: 'effects', params: { effectType: 'flip', direction: 'horizontal' } },
   { id: 'watermark', name: 'Add Watermark to Image Online', desc: 'Protect your images with custom text or logo watermarks', category: 'Basic Editing', engine: 'watermark-engine', params: { defaultTab: 'text' } },
@@ -22,8 +22,8 @@ export const TOOLS_CATALOG = [
   // 3. Blur, Pixelate and Special Effects
   { id: 'blur-image', name: 'Blur Image', desc: 'Apply Gaussian blur or motion blur to your images', category: 'Blur, Pixelate and Special Effects', engine: 'motion-blur-engine', params: { defaultType: 'gaussian', defaultBlurBg: false } },
   { id: 'pixelate-image', name: 'Pixelate Image', desc: 'Advanced retro image processor & face pixelator', category: 'Blur, Pixelate and Special Effects', engine: 'pixelate-engine', params: {} },
-  { id: 'grayscale', name: 'Convert Image to Grayscale', desc: 'Transform Colors, Embrace Elegance: Pi7 Image Tool for Effortless Grayscale Conversion', category: 'Blur, Pixelate and Special Effects', engine: 'grayscale-engine', params: {} },
-  { id: 'black-white', name: 'Turn Color Image to Black and White', desc: 'Pi7 Image Tool: Transforming Color Picture to Classic Black & White.', category: 'Blur, Pixelate and Special Effects', engine: 'blackwhite-engine', params: {} },
+  { id: 'grayscale', name: 'Convert Image to Grayscale', desc: 'Transform Colors, Embrace Elegance: Effortless Grayscale Conversion', category: 'Blur, Pixelate and Special Effects', engine: 'grayscale-engine', params: {} },
+  { id: 'black-white', name: 'Turn Color Image to Black and White', desc: 'Transforming Color Picture to Classic Black & White.', category: 'Blur, Pixelate and Special Effects', engine: 'blackwhite-engine', params: {} },
   { id: 'deep-fry', name: 'Deep Fryer Photo - Free Online Image Deep Fry Tool', desc: 'Pick an image. Hit a preset. Download your deep-fried meme. Runs in your browser.', category: 'Blur, Pixelate and Special Effects', engine: 'deep-fry-engine', params: {} },
   { id: 'add-text', name: 'Add Text to Image Online', desc: 'Overlay custom styled text onto image', category: 'Blur, Pixelate and Special Effects', engine: 'watermark-engine', params: { defaultTab: 'text' } },
   { id: 'add-border', name: 'Add Border to Image', desc: 'Add classic borders, polaroid frames, and more', category: 'Blur, Pixelate and Special Effects', engine: 'add-border-engine', params: {} },
@@ -33,9 +33,9 @@ export const TOOLS_CATALOG = [
   
   // 4. DPI & Quality
   { id: 'convert-dpi', name: 'DPI Converter - Change Image DPI To 200, 300, 600', desc: 'Change Image DPI To 200, 300, 600 - Instantly adjust print resolution and dimensions', category: 'DPI & Quality', engine: 'dpi-converter-engine', params: {} },
-  { id: 'check-dpi', name: 'Check Image DPI Online | Pi7 DPI Checker', desc: 'Discover Your Image DPI in Seconds with Our Tool', category: 'DPI & Quality', engine: 'dpi-checker-engine', params: {} },
+  { id: 'check-dpi', name: 'Check Image DPI Online', desc: 'Discover Your Image DPI in Seconds with Our Tool', category: 'DPI & Quality', engine: 'dpi-checker-engine', params: {} },
   { id: 'super-resolution', name: 'Super Resolution Images Online', desc: 'Upscale low-resolution photos into crisp, high-definition images online', category: 'DPI & Quality', engine: 'super-resolution-engine', params: {} },
-  { id: 'ai-upscale', name: 'Upscale Image Online with AI', desc: 'Pi7 Image Tool - AI upscaler that revives every pixel', category: 'DPI & Quality', engine: 'ai-upscale-engine', params: {} },
+  { id: 'ai-upscale', name: 'Upscale Image Online with AI', desc: 'AI upscaler that revives every pixel', category: 'DPI & Quality', engine: 'ai-upscale-engine', params: {} },
   
   // 5. Passport & ID Photo Sizes
   { id: 'resize-a4', name: 'Resize Image To A4 Size', desc: 'Fit and resize images to standard A4 size (2480 x 3508 px at 300 DPI)', category: 'Passport & ID Photo Sizes', engine: 'resize-a4-engine', params: { width: 2480, height: 3508 } },
@@ -45,7 +45,7 @@ export const TOOLS_CATALOG = [
   { id: 'pancard-resize', name: 'PAN Card Photo Resize', desc: 'Resize photo to PAN Card guidelines (2.5x3.5cm)', category: 'Passport & ID Photo Sizes', engine: 'resizer', params: { width: 2.5, height: 3.5, unit: 'cm', dpi: 300 } },
   
   // 6. Social Media
-  { id: 'whatsapp-dp', name: 'Resize Image for WhatsApp DP - No Cropping', desc: 'Welcome to Pi7 Image Tool - Resize Your Photos Perfectly for WhatsApp DP without Cropping!', category: 'Resize For Social Media', engine: 'whatsapp-dp-engine', params: {} },
+  { id: 'whatsapp-dp', name: 'Resize Image for WhatsApp DP - No Cropping', desc: 'Resize Your Photos Perfectly for WhatsApp DP without Cropping!', category: 'Resize For Social Media', engine: 'whatsapp-dp-engine', params: {} },
   
   // 7. Format Conversions
   { id: 'image-to-jpg', name: 'Image to JPG', desc: 'Convert image format to JPEG', category: 'Format Conversions', engine: 'converter', params: { targetFormat: 'jpg' } },

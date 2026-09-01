@@ -1,0 +1,51 @@
+# Imgediit
+
+> Free, 100% In-Browser Image Editing & PDF Utility Suite.
+> All processing happens locally on the client's device using HTML5 Canvas, WebAssembly (WASM), and WebGL. No images or documents are ever uploaded to any server.
+
+Website: https://imgediit.com
+Sitemap: https://imgediit.com/sitemap.xml
+Full Reference: https://imgediit.com/llms-full.txt
+
+## Key Capabilities & Architecture
+- **100% Client-Side Privacy**: Zero server file transmission. All operations execute entirely in browser memory.
+- **Supported Image Formats**: JPG, JPEG, PNG, WEBP, HEIC, GIF, SVG, BMP, ICO.
+- **Supported Document Formats**: PDF (Image to PDF, PDF to JPG page rendering).
+- **Core Technologies**: WebAssembly (WASM), Canvas API, OffscreenCanvas, Web Workers, WebGPU/WebGL.
+
+## Most Used Tools
+- [Passport Photo Maker](https://imgediit.com/passport-maker): Create standard passport-sized photos (3.5x4.5cm, 2x2 inch) with custom background color (white, blue, red) and face alignment.
+- [Reduce Image Size in KB](https://imgediit.com/reduce-kb): Compress images to an exact target file size in kilobytes (e.g. 20KB, 50KB, 100KB, 200KB) while maintaining visual clarity.
+- [Resize Image Pixel Online](https://imgediit.com/resize-pixel): Resize image width and height in pixels with aspect ratio locking and compression target controls.
+- [AI Photo Enhancer](https://imgediit.com/ai-enhancer): Sharpen blurry photos, enhance image details, and increase clarity using smart contrast and unsharp mask algorithms.
+- [Retouch Photo Online with AI](https://imgediit.com/ai-retouch): Smooth skin, balance skin tones, and enhance facial portrait details in seconds.
+- [Remove Blemishes from Photos](https://imgediit.com/remove-blemishes): Remove acne, pimples, blemishes, and spots with interactive blemish eraser brush.
+- [Digital Signature Generator](https://imgediit.com/gen-sig): Draw handwritten signatures or type stylish digital signatures with custom calligraphy fonts and PNG transparency download.
+- [Resize Signature](https://imgediit.com/resize-sig): Resize scanned signature images to official online exam and job application dimensions (5.0 x 2.0 cm, 300 DPI).
+
+## Social Media & Design Tools
+- [Resize Image for WhatsApp DP - No Cropping](https://imgediit.com/whatsapp-dp): Fit full vertical or horizontal photos into a 1:1 square WhatsApp profile picture with blurred background, white, black, or custom padding.
+- [Favicon Generator - Free Multi-Size Pack](https://imgediit.com/favicon-gen): Convert logos into multi-layer favicon.ico binaries (16, 32, 48, 64, 128, 180, 256px), PNG icons, site.webmanifest, and HTML head code.
+- [Add Watermark to Image](https://imgediit.com/watermark): Add draggable text or image logo watermarks with rotation, opacity, stroke, custom typography, and grid matrix repetition.
+- [Deep Fryer Photo](https://imgediit.com/deep-fry): Turn images into crisp deep-fried memes with Mild, Crispy, Burnt, and Nuclear intensity presets.
+- [Convert Picture to Pixel Art](https://imgediit.com/pixel-art): Transform photos into 8-bit / 16-bit retro arcade pixel artwork with customizable palette quantization.
+- [Censor Photo Online](https://imgediit.com/censor-photo): Redact confidential information, faces, numbers, or sensitive areas with black censor bars, blur, or pixelation.
+- [Motion Blur Image](https://imgediit.com/motion-blur): Add dynamic speed motion blur or gaussian blur effects with angle and radius controls.
+
+## DPI & Print Resolution Tools
+- [DPI Converter](https://imgediit.com/convert-dpi): Change image EXIF/JFIF resolution metadata to 200, 300, 600 DPI for printing and official portal uploads.
+- [Check Image DPI Online](https://imgediit.com/check-dpi): Inspect exact DPI resolution and physical print dimensions (inches, cm, mm) of uploaded images.
+- [Super Resolution Images](https://imgediit.com/super-resolution): Upscale low-resolution photos into crisp, high-definition images with before/after split slider.
+- [Resize Image to A4 Size](https://imgediit.com/resize-a4): Fit photos directly to international standard A4 paper size (2480 x 3508 px at 300 DPI).
+- [SSC Photo & Signature Resizer](https://imgediit.com/ssc-resize): Standardize photos and signatures to SSC exam guidelines (200 DPI, 20-50 KB).
+- [PAN Card Photo Resize](https://imgediit.com/pancard-resize): Resize photos to standard PAN Card dimensions (2.5 x 3.5 cm at 300 DPI).
+
+## PDF & Format Conversion Tools
+- [Image to PDF](https://imgediit.com/image-to-pdf): Merge single or multiple JPG, PNG, WEBP images into an organized PDF document.
+- [PDF to JPG](https://imgediit.com/pdf-to-jpg): Convert PDF document pages into high-resolution JPG images.
+- [JPG to PDF Under 50KB / 100KB / 200KB / 300KB / 500KB](https://imgediit.com/jpg-to-pdf-50kb): Convert and compress image documents directly under strict government portal PDF file size limits.
+- [Image Format Converters](https://imgediit.com/image-to-jpg): Convert between JPG, PNG, WEBP, and JPEG formats in batch.
+
+## Privacy & Legal
+- [Privacy Policy](https://imgediit.com/privacy-policy): Zero server storage policy.
+- [Terms of Service](https://imgediit.com/terms-of-service): Free personal and commercial usage terms.

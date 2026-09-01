@@ -151,9 +151,9 @@ const hexToRgb = (hex) => {
 };
 
 const FAQS = [
-  { q: "Is AeroTools safe and private?", a: "Yes, 100%. AeroTools processes all files locally inside your browser using JavaScript, WebAssembly, and WebGPU. Your images, PDFs, and data never leave your device or upload to any servers." },
-  { q: "How is AeroTools so fast?", a: "Traditional tools require uploading files to a server, waiting for processing, and downloading them back. AeroTools runs entirely in your local browser, eliminating network transfer latency completely." },
-  { q: "Does AeroTools work offline?", a: "Yes! Once loaded, most tools (resizers, compressors, signature maker) do not require an active internet connection to process files." },
+  { q: "Is Imgediit safe and private?", a: "Yes, 100%. Imgediit processes all files locally inside your browser using JavaScript, WebAssembly, and WebGPU. Your images, PDFs, and data never leave your device or upload to any servers." },
+  { q: "How is Imgediit so fast?", a: "Traditional tools require uploading files to a server, waiting for processing, and downloading them back. Imgediit runs entirely in your local browser, eliminating network transfer latency completely." },
+  { q: "Does Imgediit work offline?", a: "Yes! Once loaded, most tools (resizers, compressors, signature maker) do not require an active internet connection to process files." },
   { q: "What is client-side processing?", a: "It means the processing power of your own computer/phone is used to run the algorithms. This guarantees absolute data privacy and works instantly." }
 ];
 
@@ -5307,7 +5307,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Pixelate Image Online</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Welcome to Pi7 Image Tool - The Most Advanced Way to Pixelate a Image Online.</p>
+            <p style={{ color: '#6b7280', margin: 0 }}>The Most Advanced Way to Pixelate an Image Online.</p>
           </div>
           
           <input type="file" ref={pxInputRef} onChange={handlePxFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -5607,10 +5607,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               
               <div style={{ textAlign: 'center', marginBottom: '20px', padding: '20px 0' }}>
-                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Converted JPG Images Is Ready - Pi7 Image Tool</h1>
-                <div style={{ color: '#2563eb', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
-                  For Resize 100 images at once use Pi7 Bulk Resizer
-                </div>
+                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Converted JPG Images Are Ready</h1>
               </div>
 
               {/* Converted JPG Gallery */}
@@ -5791,10 +5788,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               
               <div style={{ textAlign: 'center', marginBottom: '20px', padding: '20px 0' }}>
-                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>PDF Document Is Ready - Pi7 Image Tool</h1>
-                <div style={{ color: '#2563eb', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
-                  For Resize 100 images at once use Pi7 Bulk Resizer
-                </div>
+                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>PDF Document Is Ready</h1>
               </div>
 
               {/* Dashed Result Container */}
@@ -5845,7 +5839,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               
               <div style={{ textAlign: 'center', marginBottom: '24px', padding: '20px 0' }}>
-                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Convert Images To PDF - Pi7 Image Tool</h1>
+                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Convert Images To PDF</h1>
               </div>
 
               {/* Main Container with Top Blue Bar */}
@@ -6016,10 +6010,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               
               <div style={{ textAlign: 'center', marginBottom: '20px', padding: '20px 0' }}>
-                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Resized JPEG Image Is Ready - Pi7 Image Tool</h1>
-                <div style={{ color: '#2563eb', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
-                  For Resize 100 images at once use Pi7 Bulk Resizer
-                </div>
+                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Resized JPEG Image Is Ready</h1>
               </div>
 
               {/* Dashed Result Container */}
@@ -6269,10 +6260,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               
               <div style={{ textAlign: 'center', marginBottom: '20px', padding: '20px 0' }}>
-                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Resized JPEG Image Is Ready - Pi7 Image Tool</h1>
-                <div style={{ color: '#2563eb', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
-                  For Resize 100 images at once use Pi7 Bulk Resizer
-                </div>
+                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Resized JPEG Image Is Ready</h1>
               </div>
 
               {/* Dashed Result Container */}
@@ -6485,7 +6473,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Upscale Image Online with AI</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Pi7 Image Tool - AI upscaler that revives every pixel</p>
+            <p style={{ color: '#6b7280', margin: 0 }}>AI upscaler that revives every pixel</p>
           </div>
           
           <input type="file" ref={upInputRef} onChange={handleUpFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -6593,10 +6581,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
             <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               
               <div style={{ textAlign: 'center', marginBottom: '20px', padding: '20px 0' }}>
-                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Resized JPEG Image Is Ready - Pi7 Image Tool</h1>
-                <div style={{ color: '#2563eb', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
-                  For Resize 100 images at once use Pi7 Bulk Resizer
-                </div>
+                <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Resized JPEG Image Is Ready</h1>
               </div>
 
               {/* Dashed Result Container */}
@@ -7064,7 +7049,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
           
           {/* Header Title */}
           <div style={{ textAlign: 'center', marginBottom: '24px', padding: '20px 0' }}>
-            <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Check Image DPI Online | Pi7 DPI Checker</h1>
+            <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Check Image DPI Online</h1>
             <p style={{ color: '#6b7280', margin: 0 }}>Discover Your Image DPI in Seconds with Our Tool</p>
           </div>
 
@@ -7291,7 +7276,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
               {/* Share section */}
               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <div style={{ fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '12px' }}>
-                  Share Pi7 Image Tool With Your Friends
+                  Share With Your Friends
                 </div>
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                   {['VK', 'FB', 'TW', 'TG', 'RD', 'IN'].map((network, i) => (
@@ -7875,7 +7860,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Retouch Photo Online with AI</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Smooth skin, clear tones, and HD results - Pi7 makes photo retouch effortless.</p>
+            <p style={{ color: '#6b7280', margin: 0 }}>Smooth skin, clear tones, and HD results - make photo retouch effortless.</p>
           </div>
           
           <input type="file" ref={rtInputRef} onChange={handleRtFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -8225,7 +8210,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
           <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
             <h1 className="workspace-title">{activeTool.name || 'Turn Color Image to Black and White'}</h1>
-            <p className="workspace-desc">{activeTool.desc || 'Pi7 Image Tool: Transforming Color Picture to Classic Black & White.'}</p>
+            <p className="workspace-desc">{activeTool.desc || 'Transforming Color Picture to Classic Black & White.'}</p>
           </div>
           
           <input type="file" ref={bwInputRef} onChange={handleBwFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -8317,7 +8302,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
           <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
             <h1 className="workspace-title">{activeTool.name || 'Convert Image to Grayscale'}</h1>
-            <p className="workspace-desc">{activeTool.desc || 'Transform Colors, Embrace Elegance: Pi7 Image Tool for Effortless Grayscale Conversion'}</p>
+            <p className="workspace-desc">{activeTool.desc || 'Transform Colors, Embrace Elegance: Effortless Grayscale Conversion'}</p>
           </div>
           
           <input type="file" ref={gsInputRef} onChange={handleGsFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -8572,7 +8557,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
           <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
             <h1 className="workspace-title">{activeTool.name || 'Resize Image for WhatsApp DP - No Cropping'}</h1>
-            <p className="workspace-desc">{activeTool.desc || 'Welcome to Pi7 Image Tool - Resize Your Photos Perfectly for WhatsApp DP without Cropping!'}</p>
+            <p className="workspace-desc">{activeTool.desc || 'Resize Your Photos Perfectly for WhatsApp DP without Cropping!'}</p>
           </div>
 
           <input type="file" ref={waInputRef} onChange={handleWaFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -9616,7 +9601,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
 
           <div className="workspace-title-bar" style={{ textAlign: 'center', marginBottom: '28px' }}>
             <h1 className="workspace-title">{activeTool.name || 'Blur Image Background Online'}</h1>
-            <p className="workspace-desc">{activeTool.desc || 'Welcome to Pi7 Image Tool - Make your photos pop with background blur.'}</p>
+            <p className="workspace-desc">{activeTool.desc || 'Make your photos pop with background blur.'}</p>
           </div>
           
           <input type="file" ref={mbInputRef} onChange={handleMbFileChange} accept="image/*" style={{ display: 'none' }} />
@@ -9822,7 +9807,7 @@ const setBinaryDpiToPng = (dataUrl, dpi) => {
         <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 160px)', paddingBottom: '40px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '20px 0', borderBottom: '1px solid #e5e7eb' }}>
             <h1 className="workspace-title" style={{ marginBottom: '8px' }}>Censor Photo Online</h1>
-            <p style={{ color: '#6b7280', margin: 0 }}>Pi7 Image Tool - The Easiest Way to Censor Photos Online, Fast and Secure!</p>
+            <p style={{ color: '#6b7280', margin: 0 }}>The Easiest Way to Censor Photos Online, Fast and Secure!</p>
           </div>
           
           <input type="file" ref={censorInputRef} onChange={handleCensorFileChange} accept="image/*" style={{ display: 'none' }} />

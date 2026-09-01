@@ -1,0 +1,53 @@
+# Imgediit - Full Technical & Functional Reference for LLMs
+
+Website: https://imgediit.com
+Canonical Domain: https://imgediit.com
+Sitemap: https://imgediit.com/sitemap.xml
+Robots: https://imgediit.com/robots.txt
+
+## Overview
+Imgediit (https://imgediit.com) is a free, privacy-first web application providing client-side image editing, formatting, enhancement, and PDF conversion utilities. Unlike traditional web converters, Imgediit performs 100% of data processing directly in the user's web browser using modern web APIs (HTML5 Canvas 2D context, WebGL, WebAssembly, and Web Workers).
+
+## Privacy Guarantee
+- No files are ever sent to any remote server or third-party cloud.
+- Image files are loaded into browser memory as local Blob/Data URLs and discarded when the tab is closed.
+- Compliance: GDPR, CCPA, and HIPAA compliant by architectural design (zero data transmission).
+
+## Complete Catalog of Tools & Parameters
+
+### 1. Most Used Tools
+- **Passport Photo Maker** (`/passport-maker`): Formats photos to 3.5cm x 4.5cm, 2x2 inch, or custom dimensions at 300 DPI with background replacement (white, blue, red) and cropping guide.
+- **Reduce Image Size in KB** (`/reduce-kb`): Iterative binary search JPEG/WEBP encoder to hit exact target file sizes (5KB, 10KB, 20KB, 50KB, 100KB, 200KB, 500KB).
+- **Resize Image Pixel Online** (`/resize-pixel`): Pixel dimension resizer with aspect ratio lock, quality control, and target KB limit.
+- **Digital Signature Generator** (`/gen-sig`): Interactive signature pad with stroke smoothing and custom typography signature styles with transparent PNG export.
+- **Increase Image Size in KB** (`/increase-kb`): Increases file size to meet minimum file size requirements on government job portals without visual distortion.
+- **AI Photo Enhancer** (`/ai-enhancer`): Client-side unsharp mask and contrast normalization to enhance clarity of blurry images.
+- **Remove Blemishes from Photos** (`/remove-blemishes`): Interactive spot-healing brush with radius and hardness controls.
+- **Retouch Photo Online with AI** (`/ai-retouch`): Skin tone smoothing, portrait lighting adjustment, and facial highlight enhancement.
+- **Resize Signature** (`/resize-sig`): Formats signature images to 5.0cm x 2.0cm at 300 DPI for exam portal compliance.
+
+### 2. Social Media & Creative Tools
+- **Resize Image for WhatsApp DP - No Cropping** (`/whatsapp-dp`): Fits non-square photos into 1:1 square aspect ratio with blurred background, white canvas, black canvas, or custom solid colors.
+- **Favicon Generator - Free Multi-Size Pack** (`/favicon-gen`): Multi-size favicon generator that produces true multi-layer binary `.ico` files (16, 32, 48, 64, 128, 180, 256px), PNG icons, `site.webmanifest`, and ready-to-paste HTML `<head>` tags.
+- **Add Watermark to Image** (`/watermark`): Interactive canvas overlay for text and image logos with rotation, opacity, font styling, stroke outline, and tiled repeat grid matrix.
+- **Deep Fryer Photo** (`/deep-fry`): Meme generator with saturation boost, contrast blowing, unsharp filter, warm color cast, and noise grain (Mild, Crispy, Burnt, Nuclear presets).
+- **Convert Picture to Pixel Art** (`/pixel-art`): Retro 8-bit/16-bit pixelation filter with color quantization and palette reduction.
+- **Censor Photo Online** (`/censor-photo`): Redaction tool supporting solid censor bars, gaussian blur boxes, and pixelate masks.
+- **Motion Blur Image** (`/motion-blur`): Angular directional motion blur filter and gaussian blur tool.
+
+### 3. DPI & Print Preparation
+- **DPI Converter** (`/convert-dpi`): Rewrites JFIF/EXIF header density tags (200, 300, 600 DPI) for high-resolution print jobs.
+- **Check Image DPI Online** (`/check-dpi`): Reads binary image headers to extract physical DPI and dimensions in inches, cm, and mm.
+- **Super Resolution Images** (`/super-resolution`): Image upscaler with side-by-side split comparison slider.
+- **Resize Image to A4 Size** (`/resize-a4`): 2480 x 3508 pixels at 300 DPI standard A4 document fit.
+- **SSC Photo & Signature Resizer** (`/ssc-resize`): Tailored for Staff Selection Commission (SSC) portals (200 DPI, 20-50 KB limits).
+- **PAN Card Photo Resize** (`/pancard-resize`): 2.5cm x 3.5cm at 300 DPI for NSDL/UTIITSL portals.
+
+### 4. PDF Utilities & Format Converters
+- **Image to PDF** (`/image-to-pdf`): Multi-image to PDF compiler with page orientation, margin, and compression settings.
+- **PDF to JPG** (`/pdf-to-jpg`): Converts PDF document pages to standalone high-resolution JPG images.
+- **JPG to PDF Under Target KB** (`/jpg-to-pdf-50kb`, `/jpg-to-pdf-100kb`, `/jpeg-to-pdf-200kb`, `/jpg-to-pdf-300kb`, `/jpg-to-pdf-500kb`): Direct client-side PDF compression ensuring output is strictly under maximum upload file size caps.
+- **Format Converters** (`/image-to-jpg`, `/png-to-jpeg`, `/jpeg-to-png`, `/webp-to-jpg`): Fast batch format conversion.
+
+## Information
+- Official Website: https://imgediit.com
