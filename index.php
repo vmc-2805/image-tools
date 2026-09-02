@@ -45,13 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !$isApi && !$isFile) {
     ]);
     $responseJson = @file_get_contents($apiUrl, false, $ctx);
     
-    $metaTagsHtml = '';
+    $currentUrlHtml = htmlspecialchars($domainName . $path, ENT_QUOTES, 'UTF-8');
+    $metaTagsHtml = "    <meta name=\"robots\" content=\"noindex\">\n    <link rel=\"canonical\" href=\"{$currentUrlHtml}\">\n";
+    $apiTagsStr = "";
+
     if ($responseJson) {
         $response = json_decode($responseJson, true);
         if (!empty($response['success']) && !empty($response['data'])) {
             $data = $response['data'];
             if (!empty($data['meta_tags_html']) && is_array($data['meta_tags_html'])) {
-                $metaTagsHtml .= implode("\n    ", $data['meta_tags_html']) . "\n";
+                $apiTagsStr = implode("\n    ", $data['meta_tags_html']);
+                $metaTagsHtml .= "    " . $apiTagsStr . "\n";
             }
             if (!empty($data['schema_json_ld'])) {
                 $schemaJson = json_encode($data['schema_json_ld'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
@@ -63,13 +67,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !$isApi && !$isFile) {
     $htmlPath = file_exists(__DIR__ . '/dist/index.html') ? __DIR__ . '/dist/index.html' : __DIR__ . '/index.html';
     if (file_exists($htmlPath)) {
         $html = file_get_contents($htmlPath);
-        if ($metaTagsHtml) {
+        
+        $html = preg_replace('/<meta\s+name=["\']robots["\']\s+content=["\'].*?["\']\s*\/?>/is', '', $html);
+        $html = preg_replace('/<link\s+rel=["\']canonical["\']\s+href=["\'].*?["\']\s*\/?>/is', '', $html);
+        
+        if (stripos($apiTagsStr, '<title') !== false) {
             $html = preg_replace('/<title>.*?<\/title>/is', '', $html);
-            $html = preg_replace('/<meta\s+name=["\']description["\']\s+content=["\'].*?["\']\s*\/?>/is', '', $html);
-            $html = preg_replace('/<meta\s+name=["\']robots["\']\s+content=["\'].*?["\']\s*\/?>/is', '', $html);
-            $html = preg_replace('/<link\s+rel=["\']canonical["\']\s+href=["\'].*?["\']\s*\/?>/is', '', $html);
-            $html = preg_replace('/<head>/i', "<head>\n    <!-- Dynamic SEO Injected by Server -->\n    " . trim($metaTagsHtml), $html, 1);
         }
+        if (stripos($apiTagsStr, 'name="description"') !== false || stripos($apiTagsStr, "name='description'") !== false) {
+            $html = preg_replace('/<meta\s+name=["\']description["\']\s+content=["\'].*?["\']\s*\/?>/is', '', $html);
+        }
+        
+        $html = preg_replace('/<head>/i', "<head>\n    <!-- Dynamic SEO Injected by Server -->\n" . $metaTagsHtml, $html, 1);
+        
         echo $html;
         exit;
     }
