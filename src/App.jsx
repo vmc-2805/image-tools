@@ -34,7 +34,37 @@ const FAQS = [
 
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
-  const [activeTool, setActiveTool] = useState(null);
+  const [activeTool, setActiveTool] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const segments = window.location.pathname.split('/').filter(Boolean);
+    const toolId = segments.length > 0 ? segments[segments.length - 1] : null;
+    if (toolId) {
+      const tool = TOOLS_CATALOG.find(t => t.id === toolId);
+      if (tool) return tool;
+      
+      const staticPages = [
+        'privacy-policy', 
+        'terms-of-service', 
+        'ai-enhancement-guide',
+        'passport-photo-guide',
+        'pdf-compressor-guide'
+      ];
+      if (staticPages.includes(toolId)) {
+        const guideTitles = {
+          'ai-enhancement-guide': 'AI Photo Enhancer & Retouching Studio',
+          'passport-photo-guide': 'Passport & Visa Photo Maker Suite',
+          'pdf-compressor-guide': 'Smart PDF & Image Compressor Studio'
+        };
+        return {
+          id: toolId,
+          name: guideTitles[toolId] || toolId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+          engine: 'page',
+          category: 'Information'
+        };
+      }
+    }
+    return null;
+  });
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [isToolkitOpen, setIsToolkitOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,9 +125,6 @@ export default function App() {
     };
     document.addEventListener('click', handleDocumentClick);
 
-    // Parse current URL path on initial load
-    handlePopState();
-
     return () => {
       window.removeEventListener('popstate', handlePopState);
       document.removeEventListener('click', handleDocumentClick);
@@ -114,7 +141,7 @@ export default function App() {
         window.history.pushState(null, '', `/${activeTool.id}`);
       }
     } else {
-      if (currentPathId !== null) {
+      if (currentPathId !== null && currentPathId !== '') {
         window.history.pushState(null, '', '/');
       }
     }
