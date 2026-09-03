@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !$isApi && !$isFile) {
     $responseJson = @file_get_contents($apiUrl, false, $ctx);
     
     $currentUrlHtml = htmlspecialchars($domainName . $path, ENT_QUOTES, 'UTF-8');
-    $metaTagsHtml = "    <meta name=\"robots\" content=\"index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1\">\n    <link rel=\"canonical\" href=\"{$currentUrlHtml}\">\n";
+    $metaTagsHtml = "    <meta name=\"robots\" content=\"index, follow, max-image-preview:large\">\n    <link rel=\"canonical\" href=\"{$currentUrlHtml}\">\n";
     $apiTagsStr = "";
 
     if ($responseJson) {
